@@ -75,6 +75,7 @@ class _ChatPageState extends State<ChatPage> {
           ChatMessage(
             text: result.text,
             isUser: false,
+            isFallback: result.isFallback,
           ),
         );
       });
@@ -167,8 +168,17 @@ class _ChatPageState extends State<ChatPage> {
                                     Colors.white,
                               ),
                             )
-                          : MarkdownBody(
-                              data: msg.text,
+                          : Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                MarkdownBody(
+                                  data: msg.text,
+                                ),
+                                if (msg.isFallback) ...[
+                                  const SizedBox(height: 8),
+                                  _offlineBadge(),
+                                ],
+                              ],
                             ),
                     ),
                   );
@@ -177,6 +187,32 @@ class _ChatPageState extends State<ChatPage> {
             )
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _offlineBadge() {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      decoration: BoxDecoration(
+        color: Colors.orange.shade50,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: Colors.orange.shade300),
+      ),
+      child: const Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(Icons.wifi_off_rounded, size: 12, color: Colors.orange),
+          SizedBox(width: 4),
+          Text(
+            'Mode Offline',
+            style: TextStyle(
+              fontSize: 11,
+              color: Colors.orange,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ],
       ),
     );
   }

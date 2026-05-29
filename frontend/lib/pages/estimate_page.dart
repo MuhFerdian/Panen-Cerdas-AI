@@ -18,6 +18,7 @@ class _EstimatePageState extends State<EstimatePage>
 
   String _kondisi = 'Baik';
   bool _loading = false;
+  bool _isFallback = false;
   HarvestResult? _harvestResult;
   String? _rawFallback;
   String? _errorMessage;
@@ -77,11 +78,15 @@ class _EstimatePageState extends State<EstimatePage>
 
     if (response['status'] == 'success') {
       setState(() {
+        _isFallback = response['fallback'] == true;
         _harvestResult = HarvestResult.fromJson(response['data']);
       });
       _animController.forward();
     } else if (response['status'] == 'fallback') {
-      setState(() => _rawFallback = response['raw']?.toString() ?? '');
+      setState(() {
+        _isFallback = false;
+        _rawFallback = response['raw']?.toString() ?? '';
+      });
       _animController.forward();
     } else {
       setState(() => _errorMessage = response['message']?.toString() ?? 'Terjadi kesalahan.');
@@ -90,6 +95,7 @@ class _EstimatePageState extends State<EstimatePage>
 
   void _reset() {
     setState(() {
+      _isFallback = false;
       _harvestResult = null;
       _rawFallback = null;
       _errorMessage = null;
@@ -487,6 +493,11 @@ class _EstimatePageState extends State<EstimatePage>
                 color: primary,
               ),
             ),
+            // Badge Mode Offline
+            if (_isFallback) ...[
+              const SizedBox(width: 10),
+              _offlineBadge(),
+            ],
           ],
         ),
         const SizedBox(height: 14),
@@ -774,6 +785,34 @@ class _EstimatePageState extends State<EstimatePage>
           ),
           const Divider(height: 20),
           Text(_rawFallback ?? '', style: const TextStyle(height: 1.6)),
+        ],
+      ),
+    );
+  }
+
+  // ─── Offline Badge ─────────────────────────────────────────────────
+
+  Widget _offlineBadge() {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      decoration: BoxDecoration(
+        color: Colors.orange.shade50,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: Colors.orange.shade300),
+      ),
+      child: const Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(Icons.wifi_off_rounded, size: 12, color: Colors.orange),
+          SizedBox(width: 4),
+          Text(
+            'Mode Offline',
+            style: TextStyle(
+              fontSize: 11,
+              color: Colors.orange,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
         ],
       ),
     );

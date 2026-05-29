@@ -3,11 +3,24 @@ import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
 import 'package:image_picker/image_picker.dart';
 
+/// Hasil dari AnalyzeService — membawa teks hasil, flag error, dan flag fallback.
+class AnalyzeResult {
+  final bool isError;
+  final bool isFallback;
+  final String text;
+
+  const AnalyzeResult({
+    required this.isError,
+    required this.isFallback,
+    required this.text,
+  });
+}
+
 class AnalyzeService {
   // Ganti dengan URL backend production saat deploy ke cloud
   static const String baseUrl = "http://localhost:8000";
 
-  static Future<String> analyzeImage(XFile imageFile) async {
+  static Future<AnalyzeResult> analyzeImage(XFile imageFile) async {
     try {
       final bytes = await imageFile.readAsBytes();
 
@@ -37,23 +50,43 @@ class AnalyzeService {
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
 
-        // Backend mengembalikan success: false → tampilkan pesan error
+        // Backend mengembalikan success: false (misal gambar invalid)
         if (data['success'] == false) {
-          return '⚠️ ${data['message'] ?? 'Terjadi kesalahan pada AI.'}';
+          return AnalyzeResult(
+            isError: true,
+            isFallback: false,
+            text: data['message']?.toString() ?? 'Terjadi kesalahan pada AI.',
+          );
         }
 
-        return data["result"] ?? "Tidak ada hasil analisis.";
+        return AnalyzeResult(
+          isError: false,
+          isFallback: data['fallback'] == true,
+          text: data['result']?.toString() ?? 'Tidak ada hasil analisis.',
+        );
       }
 
       // Coba baca pesan error dari server
       try {
         final errData = jsonDecode(response.body);
-        return '⚠️ ${errData["message"] ?? "Error ${response.statusCode}"}';
+        return AnalyzeResult(
+          isError: true,
+          isFallback: false,
+          text: errData['message']?.toString() ?? 'Error ${response.statusCode}',
+        );
       } catch (_) {
-        return '⚠️ Error ${response.statusCode}';
+        return AnalyzeResult(
+          isError: true,
+          isFallback: false,
+          text: 'Error ${response.statusCode}',
+        );
       }
     } catch (e) {
-      return '⚠️ Koneksi gagal. Pastikan backend berjalan.';
+      return AnalyzeResult(
+        isError: true,
+        isFallback: false,
+        text: 'Koneksi gagal. Pastikan backend berjalan.',
+      );
     }
   }
 }

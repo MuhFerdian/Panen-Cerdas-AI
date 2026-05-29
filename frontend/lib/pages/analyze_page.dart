@@ -15,7 +15,7 @@ class _AnalyzePageState extends State<AnalyzePage>
     with SingleTickerProviderStateMixin {
   XFile? _selectedImage;
   Uint8List? _imageBytes;
-  String? _result;
+  AnalyzeResult? _result;
   bool _loading = false;
 
   final ImagePicker _picker = ImagePicker();
@@ -73,9 +73,8 @@ class _AnalyzePageState extends State<AnalyzePage>
       _loading = false;
     });
 
-    // Tampilkan Snackbar jika terjadi error (prefix ⚠️)
-    if (result.startsWith('⚠️') && mounted) {
-      final errMsg = result.replaceFirst('⚠️ ', '');
+    // Snackbar hanya untuk error nyata (bukan fallback — fallback tetap berguna)
+    if (result.isError && mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Row(
@@ -86,7 +85,7 @@ class _AnalyzePageState extends State<AnalyzePage>
                 size: 18,
               ),
               const SizedBox(width: 10),
-              Expanded(child: Text(errMsg)),
+              Expanded(child: Text(result.text)),
             ],
           ),
           backgroundColor: Colors.red.shade700,
@@ -370,15 +369,15 @@ class _AnalyzePageState extends State<AnalyzePage>
                           topRight: Radius.circular(20),
                         ),
                       ),
-                      child: const Row(
+                      child: Row(
                         children: [
-                          Icon(
+                          const Icon(
                             Icons.article_outlined,
                             color: Colors.white,
                             size: 22,
                           ),
-                          SizedBox(width: 10),
-                          Text(
+                          const SizedBox(width: 10),
+                          const Text(
                             'Hasil Analisis AI',
                             style: TextStyle(
                               color: Colors.white,
@@ -386,6 +385,34 @@ class _AnalyzePageState extends State<AnalyzePage>
                               fontWeight: FontWeight.bold,
                             ),
                           ),
+                          // Badge Mode Offline
+                          if (_result?.isFallback == true) ...[
+                            const SizedBox(width: 10),
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 8, vertical: 3),
+                              decoration: BoxDecoration(
+                                color: Colors.orange.shade600,
+                                borderRadius: BorderRadius.circular(20),
+                              ),
+                              child: const Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Icon(Icons.wifi_off_rounded,
+                                      size: 12, color: Colors.white),
+                                  SizedBox(width: 4),
+                                  Text(
+                                    'Mode Offline',
+                                    style: TextStyle(
+                                      fontSize: 11,
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
                         ],
                       ),
                     ),
@@ -393,7 +420,7 @@ class _AnalyzePageState extends State<AnalyzePage>
                     Padding(
                       padding: const EdgeInsets.all(20),
                       child: MarkdownBody(
-                        data: _result!,
+                        data: _result!.text,
                         styleSheet: MarkdownStyleSheet(
                           h2: TextStyle(
                             fontSize: 16,

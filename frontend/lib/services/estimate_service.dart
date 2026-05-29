@@ -76,10 +76,15 @@ class EstimateService {
           return {
             'status': 'error',
             'message': body['message']?.toString() ?? 'Terjadi kesalahan pada AI.',
+            'fallback': false,
           };
         }
 
-        return body;
+        // Teruskan field fallback dari backend
+        return {
+          ...body,
+          'fallback': body['fallback'] == true,
+        };
       }
 
       // Coba baca pesan error dari server

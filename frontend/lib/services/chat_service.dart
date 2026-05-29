@@ -1,12 +1,17 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 
-/// Hasil dari ChatService — membawa teks jawaban dan flag error.
+/// Hasil dari ChatService — membawa teks jawaban, flag error, dan flag fallback.
 class ChatResult {
   final bool isError;
+  final bool isFallback;
   final String text;
 
-  const ChatResult({required this.isError, required this.text});
+  const ChatResult({
+    required this.isError,
+    required this.isFallback,
+    required this.text,
+  });
 }
 
 class ChatService {
@@ -26,27 +31,31 @@ class ChatService {
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
 
-        // Backend mengembalikan success: false → tampilkan pesan error
+        // Backend mengembalikan success: false (misal gambar invalid)
         if (data["success"] == false) {
           return ChatResult(
             isError: true,
+            isFallback: false,
             text: data["message"]?.toString() ?? "Terjadi kesalahan pada AI.",
           );
         }
 
         return ChatResult(
           isError: false,
+          isFallback: data["fallback"] == true,
           text: data["answer"]?.toString() ?? "Tidak ada jawaban.",
         );
       }
 
       return ChatResult(
         isError: true,
+        isFallback: false,
         text: "Server mengembalikan error ${response.statusCode}.",
       );
     } catch (e) {
       return ChatResult(
         isError: true,
+        isFallback: false,
         text: "Koneksi gagal. Pastikan backend berjalan.",
       );
     }
