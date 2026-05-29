@@ -404,6 +404,8 @@ class _AnalyzePageState extends State<AnalyzePage>
                   if (_result?.isFallback == true) ...[
                     const Spacer(),
                     _offlineBadge(),
+                    const SizedBox(width: 8),
+                    _localDbBadge(),
                   ],
                 ],
               ),
@@ -471,7 +473,11 @@ class _AnalyzePageState extends State<AnalyzePage>
               ),
             ),
             const Spacer(),
-            if (_result?.isFallback == true) _offlineBadge(),
+            if (_result?.isFallback == true) ...[
+              _offlineBadge(),
+              const SizedBox(width: 8),
+              _localDbBadge(),
+            ],
           ],
         ),
         const SizedBox(height: 16),
@@ -711,6 +717,32 @@ class _AnalyzePageState extends State<AnalyzePage>
             style: TextStyle(
               fontSize: 11,
               color: Colors.orange,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _localDbBadge() {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      decoration: BoxDecoration(
+        color: Colors.blue.shade50,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: Colors.blue.shade300),
+      ),
+      child: const Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(Icons.storage_rounded, size: 12, color: Colors.blue),
+          SizedBox(width: 4),
+          Text(
+            'Database Lokal',
+            style: TextStyle(
+              fontSize: 11,
+              color: Colors.blue,
               fontWeight: FontWeight.w600,
             ),
           ),
