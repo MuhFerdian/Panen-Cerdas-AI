@@ -72,7 +72,8 @@ class AnalyzeService {
         return AnalyzeResult(
           isError: true,
           isFallback: false,
-          text: errData['message']?.toString() ?? 'Error ${response.statusCode}',
+          text:
+              errData['message']?.toString() ?? 'Error ${response.statusCode}',
         );
       } catch (_) {
         return AnalyzeResult(

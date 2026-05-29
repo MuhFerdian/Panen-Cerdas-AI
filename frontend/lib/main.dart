@@ -37,11 +37,7 @@ class MainPage extends StatefulWidget {
 class _MainPageState extends State<MainPage> {
   int _selectedIndex = 0;
 
-  final List<Widget> _pages = const [
-    ChatPage(),
-    AnalyzePage(),
-    EstimatePage(),
-  ];
+  final List<Widget> _pages = const [ChatPage(), AnalyzePage(), EstimatePage()];
 
   @override
   Widget build(BuildContext context) {
@@ -77,4 +73,4 @@ class _MainPageState extends State<MainPage> {
       ),
     );
   }
-}
+}

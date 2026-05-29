@@ -12,8 +12,7 @@ class ChatPage extends StatefulWidget {
 }
 
 class _ChatPageState extends State<ChatPage> {
-  final TextEditingController controller =
-      TextEditingController();
+  final TextEditingController controller = TextEditingController();
 
   // String answer = "";
   List<ChatMessage> messages = [];
@@ -21,18 +20,12 @@ class _ChatPageState extends State<ChatPage> {
   bool loading = false;
 
   Future<void> askAI() async {
-
     if (controller.text.trim().isEmpty) return;
 
     String question = controller.text;
 
     setState(() {
-      messages.add(
-        ChatMessage(
-          text: question,
-          isUser: true,
-        ),
-      );
+      messages.add(ChatMessage(text: question, isUser: true));
 
       loading = true;
     });
@@ -85,53 +78,33 @@ class _ChatPageState extends State<ChatPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text(
-          "Panen Cerdas AI",
-        ),
-      ),
+      appBar: AppBar(title: const Text("Panen Cerdas AI")),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
           children: [
             TextField(
               controller: controller,
-              decoration:
-                  const InputDecoration(
-                hintText:
-                    "Tulis pertanyaan...",
-                border:
-                    OutlineInputBorder(),
+              decoration: const InputDecoration(
+                hintText: "Tulis pertanyaan...",
+                border: OutlineInputBorder(),
               ),
             ),
 
             const SizedBox(height: 20),
 
-            ElevatedButton(
-              onPressed: askAI,
-              child: const Text(
-                "Kirim",
-              ),
-            ),
+            ElevatedButton(onPressed: askAI, child: const Text("Kirim")),
 
             const SizedBox(height: 20),
 
             Expanded(
               child: ListView.builder(
-                itemCount:
-                    messages.length +
-                    (loading ? 1 : 0),
+                itemCount: messages.length + (loading ? 1 : 0),
                 itemBuilder: (context, index) {
-
-                  if (loading &&
-                      index == messages.length) {
+                  if (loading && index == messages.length) {
                     return const Padding(
                       padding: EdgeInsets.all(12),
-                      child: Row(
-                        children: [
-                          CircularProgressIndicator(),
-                        ],
-                      ),
+                      child: Row(children: [CircularProgressIndicator()]),
                     );
                   }
 
@@ -142,38 +115,22 @@ class _ChatPageState extends State<ChatPage> {
                         ? Alignment.centerRight
                         : Alignment.centerLeft,
                     child: Container(
-                      margin:
-                          const EdgeInsets.symmetric(
-                        vertical: 6,
-                      ),
-                      padding:
-                          const EdgeInsets.all(12),
-                      constraints:
-                          const BoxConstraints(
-                        maxWidth: 600,
-                      ),
+                      margin: const EdgeInsets.symmetric(vertical: 6),
+                      padding: const EdgeInsets.all(12),
+                      constraints: const BoxConstraints(maxWidth: 600),
                       decoration: BoxDecoration(
-                        color: msg.isUser
-                            ? Colors.green
-                            : Colors.grey.shade300,
-                        borderRadius:
-                            BorderRadius.circular(12),
+                        color: msg.isUser ? Colors.green : Colors.grey.shade300,
+                        borderRadius: BorderRadius.circular(12),
                       ),
                       child: msg.isUser
                           ? Text(
                               msg.text,
-                              style:
-                                  const TextStyle(
-                                color:
-                                    Colors.white,
-                              ),
+                              style: const TextStyle(color: Colors.white),
                             )
                           : Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                MarkdownBody(
-                                  data: msg.text,
-                                ),
+                                MarkdownBody(data: msg.text),
                                 if (msg.isFallback) ...[
                                   const SizedBox(height: 8),
                                   _offlineBadge(),
@@ -184,7 +141,7 @@ class _ChatPageState extends State<ChatPage> {
                   );
                 },
               ),
-            )
+            ),
           ],
         ),
       ),

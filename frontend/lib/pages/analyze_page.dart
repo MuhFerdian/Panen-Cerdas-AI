@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
@@ -117,10 +118,7 @@ class _AnalyzePageState extends State<AnalyzePage>
       appBar: AppBar(
         title: const Text(
           '🌿 Analisis Foto Tanaman',
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-            color: Colors.white,
-          ),
+          style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
         ),
         backgroundColor: primaryColor,
         elevation: 0,
@@ -151,9 +149,7 @@ class _AnalyzePageState extends State<AnalyzePage>
                   end: Alignment.bottomRight,
                 ),
                 borderRadius: BorderRadius.circular(16),
-                border: Border.all(
-                  color: primaryColor.withValues(alpha: 0.2),
-                ),
+                border: Border.all(color: primaryColor.withValues(alpha: 0.2)),
               ),
               child: Row(
                 children: [
@@ -201,10 +197,7 @@ class _AnalyzePageState extends State<AnalyzePage>
                     ? Stack(
                         fit: StackFit.expand,
                         children: [
-                          Image.memory(
-                            _imageBytes!,
-                            fit: BoxFit.cover,
-                          ),
+                          Image.memory(_imageBytes!, fit: BoxFit.cover),
                           // Overlay tap to change
                           if (!_loading)
                             Positioned(
@@ -224,7 +217,11 @@ class _AnalyzePageState extends State<AnalyzePage>
                                   child: const Row(
                                     mainAxisSize: MainAxisSize.min,
                                     children: [
-                                      Icon(Icons.edit, color: Colors.white, size: 14),
+                                      Icon(
+                                        Icons.edit,
+                                        color: Colors.white,
+                                        size: 14,
+                                      ),
                                       SizedBox(width: 4),
                                       Text(
                                         'Ganti Foto',
@@ -341,110 +338,383 @@ class _AnalyzePageState extends State<AnalyzePage>
             // Hasil Analisis
             if (_result != null) ...[
               const SizedBox(height: 28),
-              Container(
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(20),
-                  boxShadow: [
-                    BoxShadow(
-                      color: primaryColor.withValues(alpha: 0.08),
-                      blurRadius: 20,
-                      offset: const Offset(0, 4),
-                    ),
-                  ],
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // Header hasil
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 20,
-                        vertical: 16,
-                      ),
-                      decoration: BoxDecoration(
-                        color: primaryColor,
-                        borderRadius: const BorderRadius.only(
-                          topLeft: Radius.circular(20),
-                          topRight: Radius.circular(20),
-                        ),
-                      ),
-                      child: Row(
-                        children: [
-                          const Icon(
-                            Icons.article_outlined,
-                            color: Colors.white,
-                            size: 22,
-                          ),
-                          const SizedBox(width: 10),
-                          const Text(
-                            'Hasil Analisis AI',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 17,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          // Badge Mode Offline
-                          if (_result?.isFallback == true) ...[
-                            const SizedBox(width: 10),
-                            Container(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 8, vertical: 3),
-                              decoration: BoxDecoration(
-                                color: Colors.orange.shade600,
-                                borderRadius: BorderRadius.circular(20),
-                              ),
-                              child: const Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Icon(Icons.wifi_off_rounded,
-                                      size: 12, color: Colors.white),
-                                  SizedBox(width: 4),
-                                  Text(
-                                    'Mode Offline',
-                                    style: TextStyle(
-                                      fontSize: 11,
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ],
-                      ),
-                    ),
-                    // Konten markdown
-                    Padding(
-                      padding: const EdgeInsets.all(20),
-                      child: MarkdownBody(
-                        data: _result!.text,
-                        styleSheet: MarkdownStyleSheet(
-                          h2: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                            color: primaryColor,
-                          ),
-                          p: const TextStyle(
-                            fontSize: 14,
-                            height: 1.6,
-                            color: Color(0xFF333333),
-                          ),
-                          listBullet: TextStyle(
-                            color: primaryColor,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+              _buildResultCards(primaryColor),
               const SizedBox(height: 24),
             ],
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _buildResultCards(Color primary) {
+    Map<String, dynamic>? data;
+    try {
+      // Bersihkan jika ada format code block markdown
+      String cleanText = _result!.text
+          .replaceAll(RegExp(r'```json|```'), '')
+          .trim();
+      data = jsonDecode(cleanText);
+    } catch (e) {
+      // Jika parsing gagal, fallback ke raw text/markdown
+      data = null;
+    }
+
+    if (data == null) {
+      return Container(
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(20),
+          boxShadow: [
+            BoxShadow(
+              color: primary.withValues(alpha: 0.08),
+              blurRadius: 20,
+              offset: const Offset(0, 4),
+            ),
+          ],
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+              decoration: BoxDecoration(
+                color: primary,
+                borderRadius: const BorderRadius.only(
+                  topLeft: Radius.circular(20),
+                  topRight: Radius.circular(20),
+                ),
+              ),
+              child: Row(
+                children: [
+                  const Icon(
+                    Icons.article_outlined,
+                    color: Colors.white,
+                    size: 22,
+                  ),
+                  const SizedBox(width: 10),
+                  const Text(
+                    'Hasil Analisis',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 17,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  if (_result?.isFallback == true) ...[
+                    const Spacer(),
+                    _offlineBadge(),
+                  ],
+                ],
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(20),
+              child: MarkdownBody(data: _result!.text),
+            ),
+          ],
+        ),
+      );
+    }
+
+    // JSON berhasil di-parse
+    final penyakit = data['penyakit']?.toString() ?? 'Tidak diketahui';
+    final confidence = (data['confidence'] as num?)?.toDouble() ?? 0.0;
+    final keparahan = data['keparahan']?.toString() ?? 'Tidak Diketahui';
+    final status = data['status']?.toString() ?? 'Tidak Diketahui';
+    final gejala = data['gejala']?.toString() ?? '-';
+    final penyebab = data['penyebab']?.toString() ?? '-';
+    final solusi =
+        (data['solusi'] as List<dynamic>?)?.map((e) => e.toString()).toList() ??
+        [];
+    final pencegahan =
+        (data['pencegahan'] as List<dynamic>?)
+            ?.map((e) => e.toString())
+            .toList() ??
+        [];
+    final pupuk = data['pupuk']?.toString() ?? '-';
+
+    Color statusColor;
+    if (status.toLowerCase().contains('merah') ||
+        status.toLowerCase().contains('segera')) {
+      statusColor = Colors.red;
+    } else if (status.toLowerCase().contains('kuning') ||
+        status.toLowerCase().contains('perhatian')) {
+      statusColor = Colors.orange;
+    } else {
+      statusColor = Colors.green;
+    }
+
+    Color keparahanColor;
+    if (keparahan.toLowerCase().contains('berat')) {
+      keparahanColor = Colors.red;
+    } else if (keparahan.toLowerCase().contains('sedang')) {
+      keparahanColor = Colors.orange;
+    } else {
+      keparahanColor = Colors.green;
+    }
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        // Header
+        Row(
+          children: [
+            Icon(Icons.analytics_outlined, color: primary, size: 22),
+            const SizedBox(width: 8),
+            Text(
+              'Hasil Analisis AI',
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: primary,
+              ),
+            ),
+            const Spacer(),
+            if (_result?.isFallback == true) _offlineBadge(),
+          ],
+        ),
+        const SizedBox(height: 16),
+
+        // 1. Card Identifikasi & Confidence
+        Card(
+          elevation: 2,
+          shadowColor: primary.withValues(alpha: 0.1),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Row(
+              children: [
+                SizedBox(
+                  width: 60,
+                  height: 60,
+                  child: Stack(
+                    fit: StackFit.expand,
+                    children: [
+                      CircularProgressIndicator(
+                        value: confidence / 100,
+                        backgroundColor: Colors.grey.shade200,
+                        color: primary,
+                        strokeWidth: 6,
+                      ),
+                      Center(
+                        child: Text(
+                          '${confidence.toInt()}%',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 14,
+                            color: primary,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        'Penyakit Terdeteksi',
+                        style: TextStyle(fontSize: 12, color: Colors.grey),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        penyakit,
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Wrap(
+                        spacing: 8,
+                        children: [
+                          _buildChip(keparahan, keparahanColor),
+                          _buildChip(status, statusColor),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+        const SizedBox(height: 12),
+
+        // 2. Gejala
+        _buildSectionCard(
+          title: 'Gejala',
+          icon: Icons.visibility_outlined,
+          color: Colors.blue,
+          content: Text(gejala, style: const TextStyle(height: 1.5)),
+        ),
+        const SizedBox(height: 12),
+
+        // 3. Penyebab
+        _buildSectionCard(
+          title: 'Penyebab',
+          icon: Icons.bug_report_outlined,
+          color: Colors.orange,
+          content: Text(penyebab, style: const TextStyle(height: 1.5)),
+        ),
+        const SizedBox(height: 12),
+
+        // 4. Solusi
+        if (solusi.isNotEmpty)
+          _buildSectionCard(
+            title: 'Solusi Penanganan',
+            icon: Icons.check_circle_outline,
+            color: Colors.green,
+            content: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: solusi
+                  .map(
+                    (s) => Padding(
+                      padding: const EdgeInsets.only(bottom: 6),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text(
+                            '• ',
+                            style: TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                          Expanded(
+                            child: Text(s, style: const TextStyle(height: 1.5)),
+                          ),
+                        ],
+                      ),
+                    ),
+                  )
+                  .toList(),
+            ),
+          ),
+        const SizedBox(height: 12),
+
+        // 5. Pencegahan
+        if (pencegahan.isNotEmpty)
+          _buildSectionCard(
+            title: 'Pencegahan',
+            icon: Icons.shield_outlined,
+            color: Colors.teal,
+            content: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: pencegahan
+                  .map(
+                    (s) => Padding(
+                      padding: const EdgeInsets.only(bottom: 6),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text(
+                            '• ',
+                            style: TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                          Expanded(
+                            child: Text(s, style: const TextStyle(height: 1.5)),
+                          ),
+                        ],
+                      ),
+                    ),
+                  )
+                  .toList(),
+            ),
+          ),
+        const SizedBox(height: 12),
+
+        // 6. Pupuk
+        _buildSectionCard(
+          title: 'Rekomendasi Pupuk & Pestisida',
+          icon: Icons.eco_outlined,
+          color: Colors.green.shade700,
+          content: Text(pupuk, style: const TextStyle(height: 1.5)),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildChip(String label, Color color) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.1),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: color.withValues(alpha: 0.3)),
+      ),
+      child: Text(
+        label,
+        style: TextStyle(
+          color: color,
+          fontSize: 11,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSectionCard({
+    required String title,
+    required IconData icon,
+    required Color color,
+    required Widget content,
+  }) {
+    return Card(
+      elevation: 1,
+      shadowColor: Colors.black12,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Icon(icon, color: color, size: 20),
+                const SizedBox(width: 8),
+                Text(
+                  title,
+                  style: TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.grey.shade800,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+            content,
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _offlineBadge() {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      decoration: BoxDecoration(
+        color: Colors.orange.shade50,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: Colors.orange.shade300),
+      ),
+      child: const Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(Icons.wifi_off_rounded, size: 12, color: Colors.orange),
+          SizedBox(width: 4),
+          Text(
+            'Mode Offline',
+            style: TextStyle(
+              fontSize: 11,
+              color: Colors.orange,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ],
       ),
     );
   }

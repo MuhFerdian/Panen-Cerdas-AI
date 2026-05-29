@@ -34,17 +34,11 @@ class _EstimatePageState extends State<EstimatePage>
       vsync: this,
       duration: const Duration(milliseconds: 500),
     );
-    _fadeAnim = CurvedAnimation(
-      parent: _animController,
-      curve: Curves.easeIn,
-    );
+    _fadeAnim = CurvedAnimation(parent: _animController, curve: Curves.easeIn);
     _slideAnim = Tween<Offset>(
       begin: const Offset(0, 0.15),
       end: Offset.zero,
-    ).animate(CurvedAnimation(
-      parent: _animController,
-      curve: Curves.easeOut,
-    ));
+    ).animate(CurvedAnimation(parent: _animController, curve: Curves.easeOut));
   }
 
   @override
@@ -89,7 +83,10 @@ class _EstimatePageState extends State<EstimatePage>
       });
       _animController.forward();
     } else {
-      setState(() => _errorMessage = response['message']?.toString() ?? 'Terjadi kesalahan.');
+      setState(
+        () => _errorMessage =
+            response['message']?.toString() ?? 'Terjadi kesalahan.',
+      );
     }
   }
 
@@ -220,7 +217,11 @@ class _EstimatePageState extends State<EstimatePage>
                       color: primary.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(10),
                     ),
-                    child: Icon(Icons.agriculture_rounded, color: primary, size: 22),
+                    child: Icon(
+                      Icons.agriculture_rounded,
+                      color: primary,
+                      size: 22,
+                    ),
                   ),
                   const SizedBox(width: 12),
                   Column(
@@ -266,7 +267,8 @@ class _EstimatePageState extends State<EstimatePage>
                 icon: Icons.calendar_today_rounded,
                 primary: primary,
                 allowDecimal: false,
-                validator: (v) => _validatePositiveInt(v, 'umur tanaman', max: 120),
+                validator: (v) =>
+                    _validatePositiveInt(v, 'umur tanaman', max: 120),
               ),
               const SizedBox(height: 14),
 
@@ -295,11 +297,23 @@ class _EstimatePageState extends State<EstimatePage>
               const SizedBox(height: 10),
               Row(
                 children: [
-                  _kondisiChip('Baik', Icons.thumb_up_rounded, const Color(0xFF2E7D32)),
+                  _kondisiChip(
+                    'Baik',
+                    Icons.thumb_up_rounded,
+                    const Color(0xFF2E7D32),
+                  ),
                   const SizedBox(width: 8),
-                  _kondisiChip('Sedang', Icons.thumbs_up_down_rounded, const Color(0xFFE65100)),
+                  _kondisiChip(
+                    'Sedang',
+                    Icons.thumbs_up_down_rounded,
+                    const Color(0xFFE65100),
+                  ),
                   const SizedBox(width: 8),
-                  _kondisiChip('Buruk', Icons.thumb_down_rounded, const Color(0xFFC62828)),
+                  _kondisiChip(
+                    'Buruk',
+                    Icons.thumb_down_rounded,
+                    const Color(0xFFC62828),
+                  ),
                 ],
               ),
             ],
@@ -335,9 +349,7 @@ class _EstimatePageState extends State<EstimatePage>
         hintText: hint,
         suffixText: suffix,
         prefixIcon: Icon(icon, color: primary, size: 20),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-        ),
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
           borderSide: BorderSide(color: Colors.grey.shade300),
@@ -350,7 +362,10 @@ class _EstimatePageState extends State<EstimatePage>
           borderRadius: BorderRadius.circular(12),
           borderSide: const BorderSide(color: Colors.red),
         ),
-        contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 14,
+          vertical: 14,
+        ),
         filled: true,
         fillColor: Colors.white,
       ),
@@ -366,7 +381,9 @@ class _EstimatePageState extends State<EstimatePage>
           duration: const Duration(milliseconds: 200),
           padding: const EdgeInsets.symmetric(vertical: 12),
           decoration: BoxDecoration(
-            color: isSelected ? color.withValues(alpha: 0.12) : Colors.grey.shade100,
+            color: isSelected
+                ? color.withValues(alpha: 0.12)
+                : Colors.grey.shade100,
             borderRadius: BorderRadius.circular(12),
             border: Border.all(
               color: isSelected ? color : Colors.grey.shade300,
@@ -376,15 +393,17 @@ class _EstimatePageState extends State<EstimatePage>
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(icon,
-                  color: isSelected ? color : Colors.grey[400], size: 22),
+              Icon(
+                icon,
+                color: isSelected ? color : Colors.grey[400],
+                size: 22,
+              ),
               const SizedBox(height: 5),
               Text(
                 label,
                 style: TextStyle(
                   fontSize: 12,
-                  fontWeight:
-                      isSelected ? FontWeight.bold : FontWeight.normal,
+                  fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
                   color: isSelected ? color : Colors.grey[500],
                 ),
               ),
@@ -420,7 +439,9 @@ class _EstimatePageState extends State<EstimatePage>
                     width: 22,
                     height: 22,
                     child: CircularProgressIndicator(
-                        strokeWidth: 2.5, color: Colors.white),
+                      strokeWidth: 2.5,
+                      color: Colors.white,
+                    ),
                   ),
                   SizedBox(width: 12),
                   Text(
@@ -494,10 +515,7 @@ class _EstimatePageState extends State<EstimatePage>
               ),
             ),
             // Badge Mode Offline
-            if (_isFallback) ...[
-              const SizedBox(width: 10),
-              _offlineBadge(),
-            ],
+            if (_isFallback) ...[const SizedBox(width: 10), _offlineBadge()],
           ],
         ),
         const SizedBox(height: 14),
@@ -550,7 +568,9 @@ class _EstimatePageState extends State<EstimatePage>
         Card(
           elevation: 2,
           shadowColor: rColor.withValues(alpha: 0.15),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
           child: Padding(
             padding: const EdgeInsets.all(16),
             child: Row(
@@ -575,11 +595,15 @@ class _EstimatePageState extends State<EstimatePage>
                       const SizedBox(height: 5),
                       Container(
                         padding: const EdgeInsets.symmetric(
-                            horizontal: 12, vertical: 4),
+                          horizontal: 12,
+                          vertical: 4,
+                        ),
                         decoration: BoxDecoration(
                           color: rColor.withValues(alpha: 0.1),
                           borderRadius: BorderRadius.circular(20),
-                          border: Border.all(color: rColor.withValues(alpha: 0.3)),
+                          border: Border.all(
+                            color: rColor.withValues(alpha: 0.3),
+                          ),
                         ),
                         child: Text(
                           r.tingkatRisiko,
@@ -595,9 +619,10 @@ class _EstimatePageState extends State<EstimatePage>
                         Text(
                           r.faktorRisiko,
                           style: TextStyle(
-                              fontSize: 12,
-                              color: Colors.grey[600],
-                              height: 1.4),
+                            fontSize: 12,
+                            color: Colors.grey[600],
+                            height: 1.4,
+                          ),
                         ),
                       ],
                     ],
@@ -614,8 +639,9 @@ class _EstimatePageState extends State<EstimatePage>
           Card(
             elevation: 2,
             shadowColor: Colors.black12,
-            shape:
-                RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
+            ),
             child: Padding(
               padding: const EdgeInsets.all(18),
               child: Column(
@@ -623,8 +649,11 @@ class _EstimatePageState extends State<EstimatePage>
                 children: [
                   Row(
                     children: [
-                      Icon(Icons.lightbulb_rounded,
-                          color: const Color(0xFFF9A825), size: 20),
+                      Icon(
+                        Icons.lightbulb_rounded,
+                        color: const Color(0xFFF9A825),
+                        size: 20,
+                      ),
                       const SizedBox(width: 8),
                       Text(
                         'Rekomendasi Tindakan',
@@ -647,7 +676,9 @@ class _EstimatePageState extends State<EstimatePage>
                             width: 26,
                             height: 26,
                             decoration: BoxDecoration(
-                              color: const Color(0xFF2E7D32).withValues(alpha: 0.1),
+                              color: const Color(
+                                0xFF2E7D32,
+                              ).withValues(alpha: 0.1),
                               shape: BoxShape.circle,
                             ),
                             child: Center(
@@ -668,7 +699,9 @@ class _EstimatePageState extends State<EstimatePage>
                               child: Text(
                                 entry.value,
                                 style: const TextStyle(
-                                    fontSize: 13, height: 1.5),
+                                  fontSize: 13,
+                                  height: 1.5,
+                                ),
                               ),
                             ),
                           ),
@@ -694,8 +727,11 @@ class _EstimatePageState extends State<EstimatePage>
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Icon(Icons.info_outline_rounded,
-                    color: Colors.amber, size: 20),
+                const Icon(
+                  Icons.info_outline_rounded,
+                  color: Colors.amber,
+                  size: 20,
+                ),
                 const SizedBox(width: 10),
                 Expanded(
                   child: Column(
@@ -779,7 +815,9 @@ class _EstimatePageState extends State<EstimatePage>
               Text(
                 'Hasil dari AI',
                 style: TextStyle(
-                    fontWeight: FontWeight.bold, color: Colors.grey),
+                  fontWeight: FontWeight.bold,
+                  color: Colors.grey,
+                ),
               ),
             ],
           ),

@@ -215,31 +215,27 @@ def _chat_fallback(question: str) -> str:
 
 
 # ─── Offline Fallback: /analyze-image ────────────────────────────────
-ANALYZE_FALLBACK = """\
-## ⚠️ AI Tidak Tersedia Saat Ini
-
-AI tidak tersedia saat ini. Silakan coba lagi beberapa saat.
-
----
-
-**Sementara itu, lakukan pemeriksaan manual:**
-
-## 🔍 Panduan Identifikasi Visual
-
-| Gejala yang Terlihat | Kemungkinan Masalah |
-|---|---|
-| Daun menguning & layu dari bawah | Layu Fusarium |
-| Bercak coklat-ungu di daun | Bercak Ungu (Alternaria) |
-| Bintik perak, daun mengkerut | Serangan Thrips |
-| Daun berlubang, ada kotoran | Ulat Bawang |
-| Umbi membusuk berbau | Busuk Umbi (Botrytis) |
-
-## ✅ Langkah Awal yang Bisa Dilakukan
-
-1. Cabut dan musnahkan tanaman yang terinfeksi parah
-2. Perbaiki sistem drainase jika lahan terlalu lembab
-3. Semprot fungisida/insektisida sesuai gejala
-4. Konsultasikan dengan penyuluh pertanian setempat
+ANALYZE_FALLBACK = """
+{
+    "penyakit": "Pemeriksaan Manual (Mode Offline)",
+    "confidence": 0,
+    "keparahan": "Sedang",
+    "status": "Perlu Perhatian",
+    "gejala": "Tidak dapat menganalisis gambar karena AI sedang tidak tersedia. Panduan manual: Periksa apakah daun menguning/layu (Fusarium), bercak ungu (Alternaria), daun mengkerut (Thrips), berlubang (Ulat), atau umbi busuk (Botrytis).",
+    "penyebab": "Gagal terhubung ke layanan AI. Identifikasi harus dilakukan secara manual di lapangan berdasarkan gejala visual.",
+    "solusi": [
+        "Cabut dan musnahkan tanaman yang terinfeksi parah",
+        "Perbaiki sistem drainase jika lahan terlalu lembab",
+        "Semprot fungisida/insektisida sesuai gejala fisik yang terlihat",
+        "Konsultasikan dengan penyuluh pertanian setempat"
+    ],
+    "pencegahan": [
+        "Pastikan koneksi internet stabil untuk menggunakan AI di masa depan",
+        "Lakukan sanitasi kebun secara rutin dan pastikan drainase baik",
+        "Gunakan bibit yang sehat dan bersertifikat"
+    ],
+    "pupuk": "Gunakan pupuk berimbang. Hindari pemupukan Nitrogen berlebihan saat terjadi serangan penyakit."
+}
 """
 
 
@@ -333,32 +329,27 @@ async def analyze_image(file: UploadFile = File(...)):
         prompt = """
         Kamu adalah AI ahli pertanian bawang merah di Indonesia.
 
-        Analisis gambar tanaman bawang merah berikut secara menyeluruh dan berikan laporan dalam format ini:
-
-        ## 🔍 Identifikasi Penyakit / Masalah
-        Sebutkan nama penyakit atau masalah yang terdeteksi pada tanaman.
-
-        ## 🌿 Gejala yang Terdeteksi
-        Deskripsi gejala visual yang terlihat pada tanaman dalam gambar.
-
-        ## ⚠️ Penyebab
-        Jelaskan penyebab penyakit atau masalah tersebut (jamur, bakteri, hama, kekurangan nutrisi, dll).
-
-        ## ✅ Solusi Penanganan
-        Langkah-langkah konkret dan praktis untuk mengatasi masalah:
-        1. Tindakan segera
-        2. Tindakan jangka menengah
-        3. Tindakan jangka panjang
-
-        ## 💊 Rekomendasi Pupuk & Pestisida
-        Sebutkan nama produk atau bahan aktif yang direkomendasikan beserta dosis dan cara aplikasinya.
-
-        ## 🛡️ Pencegahan
-        Tips mencegah masalah serupa di masa depan.
-
-        Gunakan bahasa Indonesia yang sederhana dan mudah dipahami petani.
-        Jika gambar tidak menampilkan tanaman bawang merah atau gambar tidak jelas,
-        sampaikan dengan sopan dan minta pengguna untuk mengunggah foto yang lebih jelas.
+        Analisis gambar tanaman bawang merah berikut secara menyeluruh.
+        Berikan laporan HANYA dalam format JSON berikut tanpa tambahan teks atau markdown lain:
+        {
+            "penyakit": "Nama Penyakit atau Masalah",
+            "confidence": angka_0_sampai_100,
+            "keparahan": "Ringan / Sedang / Berat",
+            "status": "Aman / Perlu Perhatian / Perlu Penanganan Segera",
+            "gejala": "Deskripsi gejala visual yang terlihat pada tanaman dalam gambar.",
+            "penyebab": "Jelaskan penyebab penyakit atau masalah tersebut (jamur, bakteri, hama, kekurangan nutrisi, dll).",
+            "solusi": [
+                "Langkah penanganan 1",
+                "Langkah penanganan 2",
+                "Langkah penanganan 3"
+            ],
+            "pencegahan": [
+                "Tips pencegahan 1",
+                "Tips pencegahan 2"
+            ],
+            "pupuk": "Sebutkan rekomendasi pupuk, produk, atau bahan aktif."
+        }
+        Jika gambar tidak menampilkan tanaman bawang merah atau gambar tidak jelas, tetap gunakan format JSON tersebut, isi "penyakit" dengan "Bukan Tanaman / Gambar Tidak Jelas", "confidence" dengan 0, "status" dengan "Aman", dan jelaskan pada "gejala" atau "penyebab".
         """
 
         response = model.generate_content([prompt, image])

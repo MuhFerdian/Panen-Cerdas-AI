@@ -75,16 +75,14 @@ class EstimateService {
         if (body['success'] == false) {
           return {
             'status': 'error',
-            'message': body['message']?.toString() ?? 'Terjadi kesalahan pada AI.',
+            'message':
+                body['message']?.toString() ?? 'Terjadi kesalahan pada AI.',
             'fallback': false,
           };
         }
 
         // Teruskan field fallback dari backend
-        return {
-          ...body,
-          'fallback': body['fallback'] == true,
-        };
+        return {...body, 'fallback': body['fallback'] == true};
       }
 
       // Coba baca pesan error dari server
@@ -92,7 +90,7 @@ class EstimateService {
         final err = jsonDecode(response.body);
         return {
           "status": "error",
-          "message": err["detail"] ?? "Error ${response.statusCode}"
+          "message": err["detail"] ?? "Error ${response.statusCode}",
         };
       } catch (_) {
         return {"status": "error", "message": "Error ${response.statusCode}"};
