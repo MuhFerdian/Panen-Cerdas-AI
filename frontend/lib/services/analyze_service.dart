@@ -36,18 +36,24 @@ class AnalyzeService {
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
+
+        // Backend mengembalikan success: false → tampilkan pesan error
+        if (data['success'] == false) {
+          return '⚠️ ${data['message'] ?? 'Terjadi kesalahan pada AI.'}';
+        }
+
         return data["result"] ?? "Tidak ada hasil analisis.";
       }
 
-      // Tampilkan pesan error dari server jika ada
+      // Coba baca pesan error dari server
       try {
         final errData = jsonDecode(response.body);
-        return "❌ Error: ${errData["detail"] ?? response.statusCode}";
+        return '⚠️ ${errData["message"] ?? "Error ${response.statusCode}"}';
       } catch (_) {
-        return "❌ Error ${response.statusCode}";
+        return '⚠️ Error ${response.statusCode}';
       }
     } catch (e) {
-      return "❌ Koneksi gagal. Pastikan backend berjalan.\n\nDetail: $e";
+      return '⚠️ Koneksi gagal. Pastikan backend berjalan.';
     }
   }
 }

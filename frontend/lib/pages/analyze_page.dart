@@ -72,6 +72,32 @@ class _AnalyzePageState extends State<AnalyzePage>
       _result = result;
       _loading = false;
     });
+
+    // Tampilkan Snackbar jika terjadi error (prefix ⚠️)
+    if (result.startsWith('⚠️') && mounted) {
+      final errMsg = result.replaceFirst('⚠️ ', '');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Row(
+            children: [
+              const Icon(
+                Icons.warning_amber_rounded,
+                color: Colors.white,
+                size: 18,
+              ),
+              const SizedBox(width: 10),
+              Expanded(child: Text(errMsg)),
+            ],
+          ),
+          backgroundColor: Colors.red.shade700,
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
+          duration: const Duration(seconds: 6),
+        ),
+      );
+    }
   }
 
   void _reset() {
@@ -119,15 +145,15 @@ class _AnalyzePageState extends State<AnalyzePage>
               decoration: BoxDecoration(
                 gradient: LinearGradient(
                   colors: [
-                    primaryColor.withOpacity(0.1),
-                    primaryColor.withOpacity(0.05),
+                    primaryColor.withValues(alpha: 0.1),
+                    primaryColor.withValues(alpha: 0.05),
                   ],
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                 ),
                 borderRadius: BorderRadius.circular(16),
                 border: Border.all(
-                  color: primaryColor.withOpacity(0.2),
+                  color: primaryColor.withValues(alpha: 0.2),
                 ),
               ),
               child: Row(
@@ -160,7 +186,7 @@ class _AnalyzePageState extends State<AnalyzePage>
                   border: Border.all(
                     color: _imageBytes != null
                         ? primaryColor
-                        : primaryColor.withOpacity(0.4),
+                        : primaryColor.withValues(alpha: 0.4),
                     width: 2,
                     style: _imageBytes != null
                         ? BorderStyle.solid
@@ -169,7 +195,7 @@ class _AnalyzePageState extends State<AnalyzePage>
                   borderRadius: BorderRadius.circular(20),
                   color: _imageBytes != null
                       ? Colors.transparent
-                      : primaryColor.withOpacity(0.04),
+                      : primaryColor.withValues(alpha: 0.04),
                 ),
                 clipBehavior: Clip.antiAlias,
                 child: _imageBytes != null
@@ -193,7 +219,7 @@ class _AnalyzePageState extends State<AnalyzePage>
                                     vertical: 6,
                                   ),
                                   decoration: BoxDecoration(
-                                    color: Colors.black.withOpacity(0.6),
+                                    color: Colors.black.withValues(alpha: 0.6),
                                     borderRadius: BorderRadius.circular(20),
                                   ),
                                   child: const Row(
@@ -224,7 +250,7 @@ class _AnalyzePageState extends State<AnalyzePage>
                               width: 72,
                               height: 72,
                               decoration: BoxDecoration(
-                                color: primaryColor.withOpacity(0.12),
+                                color: primaryColor.withValues(alpha: 0.12),
                                 shape: BoxShape.circle,
                               ),
                               child: Icon(
@@ -322,7 +348,7 @@ class _AnalyzePageState extends State<AnalyzePage>
                   borderRadius: BorderRadius.circular(20),
                   boxShadow: [
                     BoxShadow(
-                      color: primaryColor.withOpacity(0.08),
+                      color: primaryColor.withValues(alpha: 0.08),
                       blurRadius: 20,
                       offset: const Offset(0, 4),
                     ),

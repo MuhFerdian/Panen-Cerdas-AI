@@ -69,7 +69,17 @@ class EstimateService {
           .timeout(const Duration(seconds: 60));
 
       if (response.statusCode == 200) {
-        return jsonDecode(response.body);
+        final body = jsonDecode(response.body);
+
+        // Backend mengembalikan success: false → kembalikan sebagai error
+        if (body['success'] == false) {
+          return {
+            'status': 'error',
+            'message': body['message']?.toString() ?? 'Terjadi kesalahan pada AI.',
+          };
+        }
+
+        return body;
       }
 
       // Coba baca pesan error dari server

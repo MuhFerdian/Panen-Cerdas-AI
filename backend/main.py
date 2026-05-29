@@ -1,7 +1,8 @@
-from fastapi import FastAPI, File, UploadFile, HTTPException
+from fastapi import FastAPI, File, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 import google.generativeai as genai
+from google.api_core import exceptions as google_exceptions
 from dotenv import load_dotenv
 import os
 import io
@@ -47,6 +48,62 @@ class HarvestInput(BaseModel):
     kondisi_tanaman: str   # Baik / Sedang / Buruk
 
 
+# ─── Helper: klasifikasi error Gemini/network → pesan Indonesia ───────────────
+def _gemini_error_message(e: Exception) -> str:
+    """Mengembalikan pesan error yang ramah pengguna tanpa stack trace."""
+    err_str = str(e).lower()
+
+    # 429 — Quota / Rate Limit
+    if (
+        isinstance(e, google_exceptions.ResourceExhausted)
+        or "quota" in err_str
+        or "resource exhausted" in err_str
+        or "429" in err_str
+        or "rate limit" in err_str
+    ):
+        return (
+            "Kuota AI sedang habis atau terlalu banyak permintaan. "
+            "Silakan coba lagi beberapa saat lagi."
+        )
+
+    # Timeout / Deadline
+    if (
+        isinstance(e, google_exceptions.DeadlineExceeded)
+        or "deadline exceeded" in err_str
+        or "timeout" in err_str
+        or "timed out" in err_str
+    ):
+        return (
+            "AI membutuhkan waktu terlalu lama untuk merespons. "
+            "Silakan coba lagi."
+        )
+
+    # 503 — Service Unavailable
+    if (
+        isinstance(e, google_exceptions.ServiceUnavailable)
+        or "unavailable" in err_str
+        or "503" in err_str
+    ):
+        return (
+            "Layanan AI sedang tidak tersedia sementara. "
+            "Silakan coba beberapa saat lagi."
+        )
+
+    # Koneksi / Network
+    if (
+        isinstance(e, (ConnectionError, OSError))
+        or "connection" in err_str
+        or "network" in err_str
+    ):
+        return (
+            "Gagal terhubung ke layanan AI. "
+            "Periksa koneksi internet Anda dan coba lagi."
+        )
+
+    # Fallback — jangan ekspos detail teknis
+    return "Terjadi kesalahan pada AI. Silakan coba lagi."
+
+
 @app.get("/")
 def home():
     return {
@@ -57,7 +114,8 @@ def home():
 @app.post("/chat")
 async def chat(data: Question):
 
-    prompt = f"""
+    try:
+        prompt = f"""
     Kamu adalah AI ahli pertanian bawang merah di Indonesia.
 
     Tugas kamu:
@@ -71,11 +129,11 @@ async def chat(data: Question):
     {data.question}
     """
 
-    response = model.generate_content(prompt)
+        response = model.generate_content(prompt)
+        return {"success": True, "answer": response.text}
 
-    return {
-        "answer": response.text
-    }
+    except Exception as e:
+        return {"success": False, "message": _gemini_error_message(e)}
 
 
 @app.post("/analyze-image")
@@ -118,18 +176,15 @@ async def analyze_image(file: UploadFile = File(...)):
         """
 
         response = model.generate_content([prompt, image])
-        return {"result": response.text}
+        return {"success": True, "result": response.text}
 
     except PIL.UnidentifiedImageError:
-        raise HTTPException(
-            status_code=400,
-            detail="File yang diunggah bukan gambar yang valid."
-        )
+        return {
+            "success": False,
+            "message": "File yang diunggah bukan gambar yang valid. Pastikan file berformat JPG atau PNG."
+        }
     except Exception as e:
-        raise HTTPException(
-            status_code=500,
-            detail=f"Terjadi kesalahan saat menganalisis gambar: {str(e)}"
-        )
+        return {"success": False, "message": _gemini_error_message(e)}
 
 
 @app.post("/estimate-harvest")
@@ -178,7 +233,7 @@ async def estimate_harvest(data: HarvestInput):
         # Coba parse JSON langsung
         try:
             result = json.loads(text)
-            return {"status": "success", "data": result}
+            return {"success": True, "status": "success", "data": result}
         except json.JSONDecodeError:
             pass
 
@@ -187,15 +242,12 @@ async def estimate_harvest(data: HarvestInput):
         if json_match:
             try:
                 result = json.loads(json_match.group())
-                return {"status": "success", "data": result}
+                return {"success": True, "status": "success", "data": result}
             except json.JSONDecodeError:
                 pass
 
         # Fallback terakhir: kembalikan teks mentah
-        return {"status": "fallback", "raw": text}
+        return {"success": True, "status": "fallback", "raw": text}
 
     except Exception as e:
-        raise HTTPException(
-            status_code=500,
-            detail=f"Terjadi kesalahan saat menghitung estimasi: {str(e)}"
-        )
+        return {"success": False, "message": _gemini_error_message(e)}

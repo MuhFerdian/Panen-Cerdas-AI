@@ -39,22 +39,46 @@ class _ChatPageState extends State<ChatPage> {
 
     controller.clear();
 
-    final result =
-        await ChatService.sendQuestion(
-      question,
-    );
+    final result = await ChatService.sendQuestion(question);
 
-    setState(() {
+    setState(() => loading = false);
 
-      messages.add(
-        ChatMessage(
-          text: result,
-          isUser: false,
-        ),
-      );
-
-      loading = false;
-    });
+    if (result.isError) {
+      // Tampilkan Snackbar merah — jangan tambahkan ke chat
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Row(
+              children: [
+                const Icon(
+                  Icons.warning_amber_rounded,
+                  color: Colors.white,
+                  size: 18,
+                ),
+                const SizedBox(width: 10),
+                Expanded(child: Text(result.text)),
+              ],
+            ),
+            backgroundColor: Colors.red.shade700,
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
+            duration: const Duration(seconds: 6),
+          ),
+        );
+      }
+    } else {
+      // Sukses — tambahkan jawaban AI ke chat
+      setState(() {
+        messages.add(
+          ChatMessage(
+            text: result.text,
+            isUser: false,
+          ),
+        );
+      });
+    }
   }
 
   @override
