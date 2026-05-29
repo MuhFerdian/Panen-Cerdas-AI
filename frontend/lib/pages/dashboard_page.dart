@@ -28,66 +28,57 @@ class _DashboardPageState extends State<DashboardPage> {
         centerTitle: true,
 
         actions: [
-
-        // Refresh Dashboard
-        IconButton(
-          icon: const Icon(Icons.refresh),
-          tooltip: 'Refresh Dashboard',
-          onPressed: () {
-            setState(() {});
-          },
-        ),
-
-        // Reset Data
-        IconButton(
-          icon: const Icon(Icons.delete_outline),
-          tooltip: 'Reset Data',
-          onPressed: () async {
-
-            final confirm = await showDialog<bool>(
-              context: context,
-              builder: (context) {
-                return AlertDialog(
-                  title: const Text('Reset Data'),
-                  content: const Text(
-                    'Yakin ingin menghapus seluruh riwayat aktivitas dan statistik?',
-                  ),
-                  actions: [
-                    TextButton(
-                      onPressed: () =>
-                          Navigator.pop(context, false),
-                      child: const Text('Batal'),
-                    ),
-
-                    ElevatedButton(
-                      onPressed: () =>
-                          Navigator.pop(context, true),
-                      child: const Text('Hapus'),
-                    ),
-                  ],
-                );
-              },
-            );
-
-            if (confirm == true) {
-
-              await _historyService.clearAll();
-
-              if (!mounted) return;
-
+          // Refresh Dashboard
+          IconButton(
+            icon: const Icon(Icons.refresh),
+            tooltip: 'Refresh Dashboard',
+            onPressed: () {
               setState(() {});
+            },
+          ),
 
-              ScaffoldMessenger.of(context)
-                  .showSnackBar(
-                const SnackBar(
-                  content:
-                      Text('Data berhasil direset'),
-                ),
+          // Reset Data
+          IconButton(
+            icon: const Icon(Icons.delete_outline),
+            tooltip: 'Reset Data',
+            onPressed: () async {
+              final confirm = await showDialog<bool>(
+                context: context,
+                builder: (context) {
+                  return AlertDialog(
+                    title: const Text('Reset Data'),
+                    content: const Text(
+                      'Yakin ingin menghapus seluruh riwayat aktivitas dan statistik?',
+                    ),
+                    actions: [
+                      TextButton(
+                        onPressed: () => Navigator.pop(context, false),
+                        child: const Text('Batal'),
+                      ),
+
+                      ElevatedButton(
+                        onPressed: () => Navigator.pop(context, true),
+                        child: const Text('Hapus'),
+                      ),
+                    ],
+                  );
+                },
               );
-            }
-          },
-        ),
-      ],
+
+              if (confirm == true) {
+                await _historyService.clearAll();
+
+                if (!context.mounted) return;
+
+                setState(() {});
+
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Data berhasil direset')),
+                );
+              }
+            },
+          ),
+        ],
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(20),
@@ -173,7 +164,7 @@ class _DashboardPageState extends State<DashboardPage> {
     );
   }
 
-    Widget _buildTotalActivityCard() {
+  Widget _buildTotalActivityCard() {
     final total =
         _historyService.chatCount +
         _historyService.analyzeCount +
@@ -200,35 +191,25 @@ class _DashboardPageState extends State<DashboardPage> {
               color: Colors.green.withValues(alpha: 0.1),
               shape: BoxShape.circle,
             ),
-            child: const Icon(
-              Icons.insights,
-              color: Colors.green,
-              size: 28,
-            ),
+            child: const Icon(Icons.insights, color: Colors.green, size: 28),
           ),
 
           const SizedBox(width: 12),
 
           Expanded(
             child: Column(
-              crossAxisAlignment:
-                  CrossAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const Text(
                   'Total Aktivitas',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                  ),
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                 ),
 
                 const SizedBox(height: 4),
 
                 Text(
                   '$total aktivitas tercatat',
-                  style: const TextStyle(
-                    color: Colors.grey,
-                  ),
+                  style: const TextStyle(color: Colors.grey),
                 ),
               ],
             ),
@@ -238,8 +219,8 @@ class _DashboardPageState extends State<DashboardPage> {
     );
   }
 
-    /// PENYAKIT TERBANYAK
-    Widget _buildLastUpdateCard() {
+  /// PENYAKIT TERBANYAK
+  Widget _buildLastUpdateCard() {
     final lastTime = _historyService.getLastActivityTime();
 
     String text;
@@ -276,35 +257,23 @@ class _DashboardPageState extends State<DashboardPage> {
               color: Colors.blue.withValues(alpha: 0.1),
               shape: BoxShape.circle,
             ),
-            child: const Icon(
-              Icons.access_time,
-              color: Colors.blue,
-            ),
+            child: const Icon(Icons.access_time, color: Colors.blue),
           ),
 
           const SizedBox(width: 12),
 
           Expanded(
             child: Column(
-              crossAxisAlignment:
-                  CrossAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const Text(
                   'Update Terakhir',
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16,
-                  ),
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
                 ),
 
                 const SizedBox(height: 4),
 
-                Text(
-                  text,
-                  style: const TextStyle(
-                    color: Colors.grey,
-                  ),
-                ),
+                Text(text, style: const TextStyle(color: Colors.grey)),
               ],
             ),
           ),
@@ -448,8 +417,7 @@ class _DashboardPageState extends State<DashboardPage> {
   }
 
   Widget _barChartItem(String label, int value, int maxVal, Color color) {
-    final double heightPercent =
-    maxVal == 0 ? 0 : value / maxVal;
+    final double heightPercent = maxVal == 0 ? 0 : value / maxVal;
     return Column(
       mainAxisAlignment: MainAxisAlignment.end,
       children: [
@@ -464,9 +432,7 @@ class _DashboardPageState extends State<DashboardPage> {
         const SizedBox(height: 8),
         Container(
           width: 40,
-          height: value == 0
-              ? 12
-              : (100 * heightPercent).clamp(12, 180),
+          height: value == 0 ? 12 : (100 * heightPercent).clamp(12, 180),
           decoration: BoxDecoration(
             color: color.withValues(alpha: 0.8),
             borderRadius: BorderRadius.circular(8),

@@ -5,6 +5,8 @@ import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:image_picker/image_picker.dart';
 import '../services/analyze_service.dart';
 import '../services/history_service.dart';
+import '../services/pdf_service.dart';
+import 'pdf_preview_page.dart';
 
 class AnalyzePage extends StatefulWidget {
   const AnalyzePage({super.key});
@@ -354,9 +356,67 @@ class _AnalyzePageState extends State<AnalyzePage>
             if (_result != null) ...[
               const SizedBox(height: 28),
               _buildResultCards(primaryColor),
+              const SizedBox(height: 16),
+              _buildExportButton(primaryColor),
               const SizedBox(height: 24),
             ],
           ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildExportButton(Color primary) {
+    return SizedBox(
+      height: 52,
+      child: OutlinedButton.icon(
+        onPressed: () {
+          Map<String, dynamic>? data;
+          try {
+            String cleanText = _result!.text
+                .replaceAll(RegExp(r'```json|```'), '')
+                .trim();
+            data = jsonDecode(cleanText);
+          } catch (_) {}
+
+          if (data == null) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text(
+                  'Hanya format JSON terstruktur yang dapat diekspor ke PDF.',
+                ),
+              ),
+            );
+            return;
+          }
+
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => PdfPreviewPage(
+                title: 'Preview PDF',
+                buildPdf: () => PdfService.generateAnalysisPdf(
+                  data: data!,
+                  isFallback: _result!.isFallback,
+                ),
+              ),
+            ),
+          );
+        },
+        icon: Icon(Icons.picture_as_pdf, color: primary),
+        label: Text(
+          'Export PDF',
+          style: TextStyle(
+            color: primary,
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        style: OutlinedButton.styleFrom(
+          side: BorderSide(color: primary, width: 2),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(14),
+          ),
         ),
       ),
     );

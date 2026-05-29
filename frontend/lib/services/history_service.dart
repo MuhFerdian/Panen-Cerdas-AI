@@ -123,7 +123,7 @@ class HistoryService {
 
     for (var a in analyzeActivities) {
       // Abaikan penyakit fallback/default yang menandakan gambar tidak dikenali
-      if (a.result.toLowerCase().contains('tidak dikenali')) { 
+      if (a.result.toLowerCase().contains('tidak dikenali')) {
         continue;
       }
       counts[a.result] = (counts[a.result] ?? 0) + 1;
@@ -150,8 +150,9 @@ class HistoryService {
   int getTopDiseaseCount() {
     final list = getRecentActivities();
 
-    final analyzeActivities =
-        list.where((a) => a.type == 'Analisis Foto').toList();
+    final analyzeActivities = list
+        .where((a) => a.type == 'Analisis Foto')
+        .toList();
 
     final Map<String, int> counts = {};
 
@@ -167,9 +168,7 @@ class HistoryService {
       return 0;
     }
 
-    return counts.values.reduce(
-      (curr, next) => curr > next ? curr : next,
-    );
+    return counts.values.reduce((curr, next) => curr > next ? curr : next);
   }
 
   // Tanggal aktivitas terakhir (bisa untuk analisis kapan pengguna paling aktif)
