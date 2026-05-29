@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'pages/dashboard_page.dart';
 import 'pages/chat_page.dart';
 import 'pages/analyze_page.dart';
 import 'pages/estimate_page.dart';
@@ -37,7 +38,12 @@ class MainPage extends StatefulWidget {
 class _MainPageState extends State<MainPage> {
   int _selectedIndex = 0;
 
-  final List<Widget> _pages = const [ChatPage(), AnalyzePage(), EstimatePage()];
+  final List<Widget> _pages = const [
+    DashboardPage(),
+    ChatPage(),
+    AnalyzePage(),
+    EstimatePage(),
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -54,6 +60,11 @@ class _MainPageState extends State<MainPage> {
         type: BottomNavigationBarType.fixed,
         elevation: 8,
         items: const [
+          BottomNavigationBarItem(
+            icon: Icon(Icons.dashboard_outlined),
+            activeIcon: Icon(Icons.dashboard),
+            label: 'Dashboard',
+          ),
           BottomNavigationBarItem(
             icon: Icon(Icons.chat_bubble_outline),
             activeIcon: Icon(Icons.chat_bubble),
