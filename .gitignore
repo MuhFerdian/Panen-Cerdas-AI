@@ -1,0 +1,61 @@
+# ======================
+# PYTHON
+# ======================
+
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Virtual Environment
+.venv/
+venv/
+env/
+backend/venv/
+backend/test.py
+backend/test2.py
+
+# Environment Variables
+.env
+backend/.env
+frontend/.env
+
+# ======================
+# FLUTTER
+# ======================
+
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.packages
+
+build/
+
+# Android
+frontend/android/.gradle/
+frontend/android/app/debug/
+frontend/android/app/profile/
+frontend/android/app/release/
+
+# iOS
+frontend/ios/Pods/
+
+# ======================
+# IDE
+# ======================
+
+.vscode/
+.idea/
+
+# ======================
+# LOG
+# ======================
+
+*.log
+
+# ======================
+# OS
+# ======================
+
+.DS_Store
+Thumbs.db
