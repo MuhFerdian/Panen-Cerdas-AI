@@ -5,6 +5,8 @@ import google.generativeai as genai
 from dotenv import load_dotenv
 import os
 import io
+import json
+import re
 import PIL.Image
 
 # Load environment variables
@@ -32,9 +34,17 @@ model = genai.GenerativeModel(
     "gemini-2.5-flash"
 )
 
-# Request schema
+# Request schema — Chat
 class Question(BaseModel):
     question: str
+
+
+# Request schema — Estimasi Panen
+class HarvestInput(BaseModel):
+    luas_lahan: float      # meter persegi
+    umur_tanaman: int      # hari
+    jumlah_bibit: int      # jumlah bibit
+    kondisi_tanaman: str   # Baik / Sedang / Buruk
 
 
 @app.get("/")
@@ -119,4 +129,73 @@ async def analyze_image(file: UploadFile = File(...)):
         raise HTTPException(
             status_code=500,
             detail=f"Terjadi kesalahan saat menganalisis gambar: {str(e)}"
+        )
+
+
+@app.post("/estimate-harvest")
+async def estimate_harvest(data: HarvestInput):
+
+    try:
+        prompt = f"""
+        Kamu adalah AI ahli pertanian bawang merah di Indonesia.
+
+        Buat estimasi panen berdasarkan data lahan berikut:
+        - Luas lahan      : {data.luas_lahan} m²
+        - Umur tanaman    : {data.umur_tanaman} hari
+        - Jumlah bibit    : {data.jumlah_bibit} bibit
+        - Kondisi tanaman : {data.kondisi_tanaman}
+
+        Informasi referensi:
+        - Bawang merah umumnya panen pada usia 60–70 hari setelah tanam
+        - Produktivitas rata-rata: 0.8–1.2 kg/m² (tergantung kondisi)
+        - Kondisi Baik = 1.1 kg/m², Sedang = 0.9 kg/m², Buruk = 0.6 kg/m²
+
+        Berikan respons HANYA dalam format JSON berikut.
+        Jangan tambahkan teks, penjelasan, atau markdown apapun di luar JSON:
+        {{
+            "estimasi_hari_panen": "string deskripsi (contoh: 15 hari lagi, atau Sudah siap panen)",
+            "estimasi_hasil_kg": angka_numerik_tanpa_satuan,
+            "tingkat_risiko": "Rendah atau Sedang atau Tinggi",
+            "faktor_risiko": "penjelasan singkat 1 kalimat",
+            "rekomendasi": [
+                "tindakan konkret 1",
+                "tindakan konkret 2",
+                "tindakan konkret 3",
+                "tindakan konkret 4"
+            ],
+            "catatan_penting": "catatan tambahan singkat untuk petani"
+        }}
+        """
+
+        response = model.generate_content(prompt)
+        text = response.text.strip()
+
+        # Bersihkan markdown code block jika ada
+        text = re.sub(r'```json\s*', '', text)
+        text = re.sub(r'```\s*', '', text)
+        text = text.strip()
+
+        # Coba parse JSON langsung
+        try:
+            result = json.loads(text)
+            return {"status": "success", "data": result}
+        except json.JSONDecodeError:
+            pass
+
+        # Fallback: ekstrak JSON dari teks menggunakan regex
+        json_match = re.search(r'\{.*\}', text, re.DOTALL)
+        if json_match:
+            try:
+                result = json.loads(json_match.group())
+                return {"status": "success", "data": result}
+            except json.JSONDecodeError:
+                pass
+
+        # Fallback terakhir: kembalikan teks mentah
+        return {"status": "fallback", "raw": text}
+
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Terjadi kesalahan saat menghitung estimasi: {str(e)}"
         )

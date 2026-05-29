@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'pages/chat_page.dart';
 import 'pages/analyze_page.dart';
+import 'pages/estimate_page.dart';
 
 void main() {
   runApp(const MyApp());
@@ -39,6 +40,7 @@ class _MainPageState extends State<MainPage> {
   final List<Widget> _pages = const [
     ChatPage(),
     AnalyzePage(),
+    EstimatePage(),
   ];
 
   @override
@@ -65,6 +67,11 @@ class _MainPageState extends State<MainPage> {
             icon: Icon(Icons.camera_alt_outlined),
             activeIcon: Icon(Icons.camera_alt),
             label: 'Analisis Foto',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.bar_chart_outlined),
+            activeIcon: Icon(Icons.bar_chart_rounded),
+            label: 'Estimasi Panen',
           ),
         ],
       ),
