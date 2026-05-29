@@ -1,7 +1,15 @@
 import 'package:flutter/material.dart';
+import '../services/history_service.dart';
 
-class DashboardPage extends StatelessWidget {
+class DashboardPage extends StatefulWidget {
   const DashboardPage({super.key});
+
+  @override
+  State<DashboardPage> createState() => _DashboardPageState();
+}
+
+class _DashboardPageState extends State<DashboardPage> {
+  final HistoryService _historyService = HistoryService();
 
   @override
   Widget build(BuildContext context) {
@@ -18,6 +26,68 @@ class DashboardPage extends StatelessWidget {
         surfaceTintColor: Colors.transparent,
         elevation: 0,
         centerTitle: true,
+
+        actions: [
+
+        // Refresh Dashboard
+        IconButton(
+          icon: const Icon(Icons.refresh),
+          tooltip: 'Refresh Dashboard',
+          onPressed: () {
+            setState(() {});
+          },
+        ),
+
+        // Reset Data
+        IconButton(
+          icon: const Icon(Icons.delete_outline),
+          tooltip: 'Reset Data',
+          onPressed: () async {
+
+            final confirm = await showDialog<bool>(
+              context: context,
+              builder: (context) {
+                return AlertDialog(
+                  title: const Text('Reset Data'),
+                  content: const Text(
+                    'Yakin ingin menghapus seluruh riwayat aktivitas dan statistik?',
+                  ),
+                  actions: [
+                    TextButton(
+                      onPressed: () =>
+                          Navigator.pop(context, false),
+                      child: const Text('Batal'),
+                    ),
+
+                    ElevatedButton(
+                      onPressed: () =>
+                          Navigator.pop(context, true),
+                      child: const Text('Hapus'),
+                    ),
+                  ],
+                );
+              },
+            );
+
+            if (confirm == true) {
+
+              await _historyService.clearAll();
+
+              if (!mounted) return;
+
+              setState(() {});
+
+              ScaffoldMessenger.of(context)
+                  .showSnackBar(
+                const SnackBar(
+                  content:
+                      Text('Data berhasil direset'),
+                ),
+              );
+            }
+          },
+        ),
+      ],
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(20),
@@ -25,6 +95,10 @@ class DashboardPage extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             _buildWelcomeBanner(primary),
+            const SizedBox(height: 16),
+            _buildTotalActivityCard(),
+            const SizedBox(height: 12),
+            _buildLastUpdateCard(),
             const SizedBox(height: 24),
             const Text(
               'Ringkasan Aktivitas',
@@ -91,8 +165,148 @@ class DashboardPage extends StatelessWidget {
           ),
           SizedBox(height: 8),
           Text(
-            'Berikut adalah ringkasan kebun bawang merah Anda hari ini.',
+            'Berikut adalah ringkasan kebun bawang merah Anda.',
             style: TextStyle(color: Colors.white70, fontSize: 15),
+          ),
+        ],
+      ),
+    );
+  }
+
+    Widget _buildTotalActivityCard() {
+    final total =
+        _historyService.chatCount +
+        _historyService.analyzeCount +
+        _historyService.estimateCount;
+
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.04),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: Colors.green.withValues(alpha: 0.1),
+              shape: BoxShape.circle,
+            ),
+            child: const Icon(
+              Icons.insights,
+              color: Colors.green,
+              size: 28,
+            ),
+          ),
+
+          const SizedBox(width: 12),
+
+          Expanded(
+            child: Column(
+              crossAxisAlignment:
+                  CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'Total Aktivitas',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+
+                const SizedBox(height: 4),
+
+                Text(
+                  '$total aktivitas tercatat',
+                  style: const TextStyle(
+                    color: Colors.grey,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+    /// PENYAKIT TERBANYAK
+    Widget _buildLastUpdateCard() {
+    final lastTime = _historyService.getLastActivityTime();
+
+    String text;
+
+    if (lastTime == null) {
+      text = 'Belum ada aktivitas';
+    } else {
+      text =
+          '${lastTime.day.toString().padLeft(2, '0')}/'
+          '${lastTime.month.toString().padLeft(2, '0')}/'
+          '${lastTime.year} '
+          '${lastTime.hour.toString().padLeft(2, '0')}:'
+          '${lastTime.minute.toString().padLeft(2, '0')}';
+    }
+
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.04),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(10),
+            decoration: BoxDecoration(
+              color: Colors.blue.withValues(alpha: 0.1),
+              shape: BoxShape.circle,
+            ),
+            child: const Icon(
+              Icons.access_time,
+              color: Colors.blue,
+            ),
+          ),
+
+          const SizedBox(width: 12),
+
+          Expanded(
+            child: Column(
+              crossAxisAlignment:
+                  CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'Update Terakhir',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                  ),
+                ),
+
+                const SizedBox(height: 4),
+
+                Text(
+                  text,
+                  style: const TextStyle(
+                    color: Colors.grey,
+                  ),
+                ),
+              ],
+            ),
           ),
         ],
       ),
@@ -105,7 +319,7 @@ class DashboardPage extends StatelessWidget {
         Expanded(
           child: _statCard(
             title: 'Chat AI',
-            value: '124',
+            value: _historyService.chatCount.toString(),
             icon: Icons.chat_bubble_outline,
             color: Colors.blue,
           ),
@@ -114,7 +328,7 @@ class DashboardPage extends StatelessWidget {
         Expanded(
           child: _statCard(
             title: 'Analisis',
-            value: '48',
+            value: _historyService.analyzeCount.toString(),
             icon: Icons.camera_alt_outlined,
             color: Colors.orange,
           ),
@@ -123,7 +337,7 @@ class DashboardPage extends StatelessWidget {
         Expanded(
           child: _statCard(
             title: 'Estimasi',
-            value: '15',
+            value: _historyService.estimateCount.toString(),
             icon: Icons.bar_chart_outlined,
             color: Colors.green,
           ),
@@ -181,8 +395,24 @@ class DashboardPage extends StatelessWidget {
   }
 
   Widget _buildSimpleChart(Color primary) {
+    int maxVal = _historyService.chatCount;
+    if (_historyService.analyzeCount > maxVal) {
+      maxVal = _historyService.analyzeCount;
+    }
+    if (_historyService.estimateCount > maxVal) {
+      maxVal = _historyService.estimateCount;
+    }
+
+    // Fallback jika kosong semua
+    if (maxVal == 0) {
+      maxVal = 10;
+    }
+
+    // Tambah sedikit margin atas untuk chart
+    maxVal = (maxVal * 1.2).toInt();
+
     return Container(
-      height: 200,
+      height: 240,
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: Colors.white,
@@ -199,16 +429,27 @@ class DashboardPage extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
-          _barChartItem('Chat', 124, 150, Colors.blue),
-          _barChartItem('Foto', 48, 150, Colors.orange),
-          _barChartItem('Estimasi', 15, 150, Colors.green),
+          _barChartItem('Chat', _historyService.chatCount, maxVal, Colors.blue),
+          _barChartItem(
+            'Foto',
+            _historyService.analyzeCount,
+            maxVal,
+            Colors.orange,
+          ),
+          _barChartItem(
+            'Estimasi',
+            _historyService.estimateCount,
+            maxVal,
+            Colors.green,
+          ),
         ],
       ),
     );
   }
 
   Widget _barChartItem(String label, int value, int maxVal, Color color) {
-    final double heightPercent = value / maxVal;
+    final double heightPercent =
+    maxVal == 0 ? 0 : value / maxVal;
     return Column(
       mainAxisAlignment: MainAxisAlignment.end,
       children: [
@@ -223,7 +464,9 @@ class DashboardPage extends StatelessWidget {
         const SizedBox(height: 8),
         Container(
           width: 40,
-          height: 120 * heightPercent,
+          height: value == 0
+              ? 12
+              : (100 * heightPercent).clamp(12, 180),
           decoration: BoxDecoration(
             color: color.withValues(alpha: 0.8),
             borderRadius: BorderRadius.circular(8),
@@ -243,12 +486,19 @@ class DashboardPage extends StatelessWidget {
   }
 
   Widget _buildTopDisease(Color primary) {
+    String topDisease = _historyService.getTopDisease();
+    int topDiseaseCount = _historyService.getTopDiseaseCount();
+    bool isEmpty =
+        topDisease == '-' || topDisease == 'Penyakit Tidak Diketahui';
+
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Colors.red.shade50,
+        color: isEmpty ? Colors.grey.shade100 : Colors.red.shade50,
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: Colors.red.shade100),
+        border: Border.all(
+          color: isEmpty ? Colors.grey.shade200 : Colors.red.shade100,
+        ),
       ),
       child: Row(
         children: [
@@ -259,14 +509,16 @@ class DashboardPage extends StatelessWidget {
               shape: BoxShape.circle,
               boxShadow: [
                 BoxShadow(
-                  color: Colors.red.withValues(alpha: 0.2),
+                  color: isEmpty
+                      ? Colors.grey.withValues(alpha: 0.2)
+                      : Colors.red.withValues(alpha: 0.2),
                   blurRadius: 8,
                 ),
               ],
             ),
-            child: const Icon(
+            child: Icon(
               Icons.coronavirus_outlined,
-              color: Colors.red,
+              color: isEmpty ? Colors.grey : Colors.red,
               size: 28,
             ),
           ),
@@ -275,18 +527,23 @@ class DashboardPage extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
-                  'Layu Fusarium',
+                Text(
+                  isEmpty ? 'Belum Ada Data' : topDisease,
                   style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
-                    color: Colors.red,
+                    color: isEmpty ? Colors.grey.shade700 : Colors.red,
                   ),
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  'Terdeteksi 12 kali bulan ini',
-                  style: TextStyle(fontSize: 14, color: Colors.red.shade700),
+                  isEmpty
+                      ? 'Ayo mulai analisis foto tanaman Anda'
+                      : 'Terdeteksi $topDiseaseCount kali',
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: isEmpty ? Colors.grey : Colors.red.shade700,
+                  ),
                 ),
               ],
             ),
@@ -297,6 +554,51 @@ class DashboardPage extends StatelessWidget {
   }
 
   Widget _buildRecentActivity(Color primary) {
+    final activities = _historyService.getRecentActivities();
+
+    if (activities.isEmpty) {
+      return Container(
+        padding: const EdgeInsets.symmetric(vertical: 40, horizontal: 20),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(20),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.04),
+              blurRadius: 10,
+              offset: const Offset(0, 4),
+            ),
+          ],
+        ),
+        child: Center(
+          child: Column(
+            children: [
+              Icon(
+                Icons.history_rounded,
+                size: 48,
+                color: Colors.grey.shade300,
+              ),
+              const SizedBox(height: 16),
+              Text(
+                'Belum Ada Aktivitas',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.grey.shade600,
+                ),
+              ),
+              const SizedBox(height: 8),
+              const Text(
+                'Mulai gunakan fitur Chat AI, Analisis Foto, atau Estimasi Panen.',
+                textAlign: TextAlign.center,
+                style: TextStyle(color: Colors.grey),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
@@ -310,29 +612,47 @@ class DashboardPage extends StatelessWidget {
         ],
       ),
       child: Column(
-        children: [
-          _activityItem(
-            icon: Icons.camera_alt,
-            color: Colors.orange,
-            title: 'Analisis Foto: Bercak Ungu',
-            time: '10 menit yang lalu',
-            isLast: false,
-          ),
-          _activityItem(
-            icon: Icons.bar_chart,
-            color: Colors.green,
-            title: 'Estimasi Panen: 1,200 kg',
-            time: '2 jam yang lalu',
-            isLast: false,
-          ),
-          _activityItem(
-            icon: Icons.chat_bubble,
-            color: Colors.blue,
-            title: 'Chat AI: Cara Pemupukan',
-            time: 'Kemarin',
-            isLast: true,
-          ),
-        ],
+        children: activities.take(5).toList().asMap().entries.map((entry) {
+          int idx = entry.key;
+          var item = entry.value;
+          bool isLast =
+              idx == (activities.length > 5 ? 4 : activities.length - 1);
+
+          IconData icon;
+          Color color;
+
+          if (item.type == 'Analisis Foto') {
+            icon = Icons.camera_alt;
+            color = Colors.orange;
+          } else if (item.type == 'Estimasi Panen') {
+            icon = Icons.bar_chart;
+            color = Colors.green;
+          } else {
+            icon = Icons.chat_bubble;
+            color = Colors.blue;
+          }
+
+          // Format waktu
+          final diff = DateTime.now().difference(item.timestamp);
+          String timeStr;
+          if (diff.inMinutes < 1) {
+            timeStr = 'Baru saja';
+          } else if (diff.inMinutes < 60) {
+            timeStr = '${diff.inMinutes} menit yang lalu';
+          } else if (diff.inHours < 24) {
+            timeStr = '${diff.inHours} jam yang lalu';
+          } else {
+            timeStr = '${diff.inDays} hari yang lalu';
+          }
+
+          return _activityItem(
+            icon: icon,
+            color: color,
+            title: '${item.type}: ${item.result}',
+            time: timeStr,
+            isLast: isLast,
+          );
+        }).toList(),
       ),
     );
   }
@@ -361,6 +681,8 @@ class DashboardPage extends StatelessWidget {
           ),
           title: Text(
             title,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
             style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 15),
           ),
           subtitle: Text(

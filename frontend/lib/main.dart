@@ -4,7 +4,11 @@ import 'pages/chat_page.dart';
 import 'pages/analyze_page.dart';
 import 'pages/estimate_page.dart';
 
-void main() {
+import 'services/history_service.dart';
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await HistoryService().init();
   runApp(const MyApp());
 }
 

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:image_picker/image_picker.dart';
 import '../services/analyze_service.dart';
+import '../services/history_service.dart';
 
 class AnalyzePage extends StatefulWidget {
   const AnalyzePage({super.key});
@@ -68,6 +69,20 @@ class _AnalyzePageState extends State<AnalyzePage>
     });
 
     final result = await AnalyzeService.analyzeImage(_selectedImage!);
+
+    if (!result.isError) {
+      try {
+        String cleanText = result.text
+            .replaceAll(RegExp(r'```json|```'), '')
+            .trim();
+        final data = jsonDecode(cleanText);
+        final penyakit =
+            data['penyakit']?.toString() ?? 'Penyakit Tidak Diketahui';
+        HistoryService().logAnalyze(penyakit);
+      } catch (_) {
+        HistoryService().logAnalyze('Analisis Selesai');
+      }
+    }
 
     setState(() {
       _result = result;

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../services/estimate_service.dart';
+import '../services/history_service.dart';
 
 class EstimatePage extends StatefulWidget {
   const EstimatePage({super.key});
@@ -76,6 +77,9 @@ class _EstimatePageState extends State<EstimatePage>
         _harvestResult = HarvestResult.fromJson(response['data']);
       });
       _animController.forward();
+      HistoryService().logEstimate(
+        '${_harvestResult?.estimasiHasilKg ?? 0} kg',
+      );
     } else if (response['status'] == 'fallback') {
       setState(() {
         _isFallback = false;

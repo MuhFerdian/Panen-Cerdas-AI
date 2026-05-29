@@ -3,6 +3,7 @@ import 'package:flutter_markdown/flutter_markdown.dart';
 import '../models/chat_message.dart';
 
 import '../services/chat_service.dart';
+import '../services/history_service.dart';
 
 class ChatPage extends StatefulWidget {
   const ChatPage({super.key});
@@ -62,7 +63,9 @@ class _ChatPageState extends State<ChatPage> {
         );
       }
     } else {
-      // Sukses — tambahkan jawaban AI ke chat
+      // Sukses — tambahkan jawaban AI ke chat dan catat history
+      HistoryService().logChat(question);
+
       setState(() {
         messages.add(
           ChatMessage(
