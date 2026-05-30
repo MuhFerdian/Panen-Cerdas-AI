@@ -101,6 +101,13 @@ class _DashboardPageState extends State<DashboardPage> {
             _buildDiseaseTrendChart(primary),
             const SizedBox(height: 24),
             const Text(
+              'Rekomendasi Musim Tanam',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 16),
+            _buildPlantingRecommendation(primary),
+            const SizedBox(height: 24),
+            const Text(
               'Ringkasan Aktivitas',
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
@@ -500,6 +507,240 @@ class _DashboardPageState extends State<DashboardPage> {
                     ),
                   ),
                 ],
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  /// Rekomendasi Musim Tanam — card modern berbasis data penyakit dominan
+  /// yang diambil dari HistoryService.getPlantingRecommendation().
+  Widget _buildPlantingRecommendation(Color primaryColor) {
+    final rec = _historyService.getPlantingRecommendation();
+
+    final String status = rec['status'] as String;
+    final List<String> recommendations = List<String>.from(
+      rec['recommendation'] as List,
+    );
+    final String disease = rec['disease'] as String;
+    final String colorType = rec['colorType'] as String;
+
+    // Tentukan palet warna berdasarkan colorType
+    final Color mainColor;
+    final Color bgColor;
+    final Color borderColor;
+    final IconData statusIcon;
+
+    switch (colorType) {
+      case 'red':
+        mainColor = Colors.red.shade700;
+        bgColor = Colors.red.shade50;
+        borderColor = Colors.red.shade100;
+        statusIcon = Icons.warning_rounded;
+        break;
+      case 'orange':
+        mainColor = Colors.orange.shade700;
+        bgColor = Colors.orange.shade50;
+        borderColor = Colors.orange.shade100;
+        statusIcon = Icons.info_rounded;
+        break;
+      case 'green':
+        mainColor = Colors.green.shade700;
+        bgColor = Colors.green.shade50;
+        borderColor = Colors.green.shade100;
+        statusIcon = Icons.check_circle_rounded;
+        break;
+      default: // grey — belum ada data
+        mainColor = Colors.grey.shade600;
+        bgColor = Colors.grey.shade50;
+        borderColor = Colors.grey.shade200;
+        statusIcon = Icons.help_outline_rounded;
+    }
+
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.04),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+        border: Border.all(color: borderColor, width: 1.5),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          // ── Header ──────────────────────────────────────────
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+            decoration: BoxDecoration(
+              color: bgColor,
+              borderRadius: const BorderRadius.only(
+                topLeft: Radius.circular(18),
+                topRight: Radius.circular(18),
+              ),
+            ),
+            child: Row(
+              children: [
+                Icon(Icons.eco_rounded, color: mainColor, size: 22),
+                const SizedBox(width: 10),
+                const Text(
+                  'Rekomendasi Musim Tanam',
+                  style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+                ),
+                const Spacer(),
+                // Badge status
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 4,
+                  ),
+                  decoration: BoxDecoration(
+                    color: mainColor.withValues(alpha: 0.15),
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(statusIcon, color: mainColor, size: 13),
+                      const SizedBox(width: 4),
+                      Text(
+                        status,
+                        style: TextStyle(
+                          color: mainColor,
+                          fontSize: 11,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+
+          // ── Body ─────────────────────────────────────────────
+          Padding(
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Highlight penyakit dominan (hanya jika ada data)
+                if (disease != '-') ...[
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 14,
+                      vertical: 10,
+                    ),
+                    decoration: BoxDecoration(
+                      color: bgColor,
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(color: borderColor),
+                    ),
+                    child: Row(
+                      children: [
+                        Icon(
+                          Icons.coronavirus_outlined,
+                          color: mainColor,
+                          size: 18,
+                        ),
+                        const SizedBox(width: 10),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Penyakit Dominan',
+                                style: TextStyle(
+                                  fontSize: 11,
+                                  color: mainColor,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                              const SizedBox(height: 2),
+                              Text(
+                                disease,
+                                style: TextStyle(
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.bold,
+                                  color: mainColor,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                ],
+
+                // Label rekomendasi
+                Row(
+                  children: [
+                    Icon(Icons.checklist_rounded, color: mainColor, size: 18),
+                    const SizedBox(width: 8),
+                    Text(
+                      disease == '-' ? 'Langkah Awal' : 'Rekomendasi Tindakan',
+                      style: TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w700,
+                        color: mainColor,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 10),
+
+                // Daftar rekomendasi
+                ...recommendations.asMap().entries.map((entry) {
+                  final idx = entry.key + 1;
+                  final text = entry.value;
+                  return Padding(
+                    padding: const EdgeInsets.only(bottom: 8),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // Nomor urut dalam lingkaran kecil
+                        Container(
+                          width: 22,
+                          height: 22,
+                          margin: const EdgeInsets.only(top: 1),
+                          decoration: BoxDecoration(
+                            color: mainColor.withValues(alpha: 0.12),
+                            shape: BoxShape.circle,
+                          ),
+                          child: Center(
+                            child: Text(
+                              '$idx',
+                              style: TextStyle(
+                                fontSize: 11,
+                                fontWeight: FontWeight.bold,
+                                color: mainColor,
+                              ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 10),
+                        Expanded(
+                          child: Text(
+                            text,
+                            style: const TextStyle(
+                              fontSize: 13,
+                              height: 1.5,
+                              color: Color(0xFF424242),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                }),
               ],
             ),
           ),

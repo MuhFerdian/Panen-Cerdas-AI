@@ -270,6 +270,121 @@ class HistoryService {
     return stats.entries.first.value;
   }
 
+  // --- REKOMENDASI MUSIM TANAM ---
+
+  /// Menganalisis penyakit dominan dari histori analisis foto dan mengembalikan
+  /// rekomendasi musim tanam yang relevan.
+  ///
+  /// Return format:
+  /// ```
+  /// {
+  ///   'status': String,
+  ///   'recommendation': List<String>,
+  ///   'disease': String,
+  ///   'colorType': String,  // 'orange' | 'red' | 'grey' | 'green'
+  /// }
+  /// ```
+  /// Tidak mengubah format data SharedPreferences yang sudah ada.
+  Map<String, dynamic> getPlantingRecommendation() {
+    final top = getTopDiseaseTrend();
+
+    // Belum ada data analisis
+    if (top == '-') {
+      return {
+        'status': 'Belum Ada Data',
+        'recommendation': [
+          'Lakukan analisis foto terlebih dahulu untuk mendapatkan rekomendasi musim tanam.',
+        ],
+        'disease': '-',
+        'colorType': 'grey',
+      };
+    }
+
+    final lower = top.toLowerCase();
+
+    if (lower.contains('thrips')) {
+      return {
+        'status': 'Perlu Pengendalian Hama',
+        'recommendation': [
+          'Lakukan monitoring daun rutin setiap 2–3 hari.',
+          'Gunakan perangkap kuning untuk memantau populasi hama.',
+          'Lakukan penyemprotan preventif bila diperlukan.',
+        ],
+        'disease': top,
+        'colorType': 'orange',
+      };
+    } else if (lower.contains('fusarium') || lower.contains('layu')) {
+      return {
+        'status': 'Perlu Rotasi Tanam',
+        'recommendation': [
+          'Gunakan bibit yang sehat dan bersertifikat.',
+          'Rotasikan dengan tanaman non-allium minimal satu musim.',
+          'Perbaiki sistem drainase lahan sebelum tanam berikutnya.',
+        ],
+        'disease': top,
+        'colorType': 'red',
+      };
+    } else if (lower.contains('busuk') || lower.contains('botrytis')) {
+      return {
+        'status': 'Perlu Perbaikan Drainase',
+        'recommendation': [
+          'Kurangi genangan air di sekitar tanaman.',
+          'Tingkatkan aerasi tanah dengan penggemburan rutin.',
+          'Gunakan fungisida sesuai kebutuhan dan dosis anjuran.',
+        ],
+        'disease': top,
+        'colorType': 'red',
+      };
+    } else if (lower.contains('antraknosa') ||
+        lower.contains('bujang') ||
+        lower.contains('patah')) {
+      return {
+        'status': 'Monitoring Intensif',
+        'recommendation': [
+          'Pangkas bagian daun atau umbi yang terserang.',
+          'Jaga sirkulasi udara dengan mengatur jarak tanam.',
+          'Hindari kelembapan berlebih, terutama saat musim hujan.',
+        ],
+        'disease': top,
+        'colorType': 'orange',
+      };
+    } else if (lower.contains('alternaria') || lower.contains('bercak')) {
+      return {
+        'status': 'Monitoring Aktif',
+        'recommendation': [
+          'Atur jarak tanam agar tidak terlalu rapat.',
+          'Jaga kebersihan dan sanitasi lahan secara rutin.',
+          'Semprotkan fungisida sistemik bila bercak meluas.',
+        ],
+        'disease': top,
+        'colorType': 'orange',
+      };
+    } else if (lower.contains('ulat')) {
+      return {
+        'status': 'Pengendalian Hama Aktif',
+        'recommendation': [
+          'Pasang perangkap feromon untuk memantau populasi ulat.',
+          'Periksa kelompok telur ulat secara manual setiap pagi.',
+          'Gunakan insektisida biologi (Bacillus thuringiensis) jika diperlukan.',
+        ],
+        'disease': top,
+        'colorType': 'orange',
+      };
+    } else {
+      // Penyakit lain yang dikenali tapi belum ada aturan spesifik
+      return {
+        'status': 'Perlu Penanganan',
+        'recommendation': [
+          'Konsultasikan dengan penyuluh pertanian setempat.',
+          'Terapkan langkah penanganan sesuai jenis penyakit terdeteksi.',
+          'Jaga kebersihan lahan dan gunakan bibit berkualitas.',
+        ],
+        'disease': top,
+        'colorType': 'orange',
+      };
+    }
+  }
+
   // --- RESET DATA ---
   Future<void> clearAll() async {
     await init();
