@@ -91,6 +91,8 @@ class _DashboardPageState extends State<DashboardPage> {
             const SizedBox(height: 12),
             _buildLastUpdateCard(),
             const SizedBox(height: 24),
+            _buildInsightCard(),
+            const SizedBox(height: 24),
             const Text(
               'Ringkasan Aktivitas',
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
@@ -274,6 +276,223 @@ class _DashboardPageState extends State<DashboardPage> {
                 const SizedBox(height: 4),
 
                 Text(text, style: const TextStyle(color: Colors.grey)),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  /// Card Insight Kebun AI — menampilkan rekomendasi otomatis berdasarkan histori
+  /// analisis penyakit dan Smart Score kesehatan kebun.
+  Widget _buildInsightCard() {
+    final insight = _historyService.getInsightMessage();
+    final score = _historyService.getHealthScore();
+    final topDisease = _historyService.getTopDisease();
+    final hasData = topDisease != '-';
+
+    // Tentukan warna & label sesuai skor
+    final Color scoreColor;
+    final String scoreLabel;
+    if (score >= 80) {
+      scoreColor = Colors.green.shade600;
+      scoreLabel = 'Baik';
+    } else if (score >= 60) {
+      scoreColor = Colors.orange.shade600;
+      scoreLabel = 'Perlu Perhatian';
+    } else {
+      scoreColor = Colors.red.shade600;
+      scoreLabel = 'Kritis';
+    }
+
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.05),
+            blurRadius: 12,
+            offset: const Offset(0, 4),
+          ),
+        ],
+        border: Border.all(
+          color: scoreColor.withValues(alpha: 0.3),
+          width: 1.5,
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          // Header card
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+            decoration: BoxDecoration(
+              color: scoreColor.withValues(alpha: 0.08),
+              borderRadius: const BorderRadius.only(
+                topLeft: Radius.circular(18),
+                topRight: Radius.circular(18),
+              ),
+            ),
+            child: Row(
+              children: [
+                Icon(
+                  Icons.tips_and_updates_rounded,
+                  color: scoreColor,
+                  size: 22,
+                ),
+                const SizedBox(width: 10),
+                const Text(
+                  'Insight Kebun AI',
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                ),
+                const Spacer(),
+                // Badge status skor
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 4,
+                  ),
+                  decoration: BoxDecoration(
+                    color: scoreColor.withValues(alpha: 0.15),
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Text(
+                    scoreLabel,
+                    style: TextStyle(
+                      color: scoreColor,
+                      fontSize: 12,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+
+          // Body: pesan insight
+          Padding(
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Insight message
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('💡 ', style: TextStyle(fontSize: 16)),
+                    Expanded(
+                      child: Text(
+                        insight,
+                        style: const TextStyle(
+                          fontSize: 14,
+                          height: 1.6,
+                          color: Color(0xFF424242),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+
+                const SizedBox(height: 20),
+                const Divider(height: 1, color: Color(0xFFEEEEEE)),
+                const SizedBox(height: 16),
+
+                // Smart Score: Kesehatan Kebun
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          'Kesehatan Kebun',
+                          style: TextStyle(
+                            fontSize: 13,
+                            color: Colors.grey,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.baseline,
+                          textBaseline: TextBaseline.alphabetic,
+                          children: [
+                            Text(
+                              '$score',
+                              style: TextStyle(
+                                fontSize: 32,
+                                fontWeight: FontWeight.bold,
+                                color: scoreColor,
+                              ),
+                            ),
+                            Text(
+                              ' / 100',
+                              style: TextStyle(
+                                fontSize: 16,
+                                color: Colors.grey.shade500,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+
+                    // Progress ring visual sederhana
+                    SizedBox(
+                      width: 64,
+                      height: 64,
+                      child: Stack(
+                        fit: StackFit.expand,
+                        children: [
+                          CircularProgressIndicator(
+                            value: score / 100,
+                            strokeWidth: 7,
+                            backgroundColor: Colors.grey.shade200,
+                            valueColor: AlwaysStoppedAnimation<Color>(
+                              scoreColor,
+                            ),
+                          ),
+                          Center(
+                            child: Text(
+                              '$score%',
+                              style: TextStyle(
+                                fontSize: 13,
+                                fontWeight: FontWeight.bold,
+                                color: scoreColor,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+
+                // Info tambahan jika belum ada data
+                if (!hasData) ...[
+                  const SizedBox(height: 12),
+                  Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: Colors.blue.shade50,
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: const Row(
+                      children: [
+                        Icon(Icons.info_outline, color: Colors.blue, size: 16),
+                        SizedBox(width: 8),
+                        Expanded(
+                          child: Text(
+                            'Lakukan Analisis Foto untuk mengaktifkan insight personal.',
+                            style: TextStyle(fontSize: 13, color: Colors.blue),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
               ],
             ),
           ),

@@ -182,6 +182,47 @@ class HistoryService {
     return activities.first.timestamp;
   }
 
+  // --- INSIGHT KEBUN AI ---
+
+  /// Mengembalikan pesan insight berdasarkan penyakit teratas yang terdeteksi.
+  /// Tidak mengubah format data SharedPreferences.
+  String getInsightMessage() {
+    final top = getTopDisease();
+
+    if (top == '-') {
+      return 'Belum terdapat cukup data analisis. Silakan lakukan analisis foto tanaman untuk mendapatkan rekomendasi kebun.';
+    }
+
+    // Cocokkan berdasarkan substring agar fleksibel (misal: nama bisa berubah sedikit)
+    final lower = top.toLowerCase();
+
+    if (lower.contains('thrips')) {
+      return 'Risiko Serangan Thrips meningkat. Disarankan melakukan monitoring daun setiap 2–3 hari dan melakukan penyemprotan preventif.';
+    } else if (lower.contains('fusarium')) {
+      return 'Gejala Layu Fusarium sering muncul. Periksa drainase lahan dan kurangi kelembapan tanah berlebih.';
+    } else if (lower.contains('busuk') || lower.contains('botrytis')) {
+      return 'Busuk Umbi terdeteksi beberapa kali. Pastikan penyimpanan hasil panen memiliki sirkulasi udara yang baik.';
+    } else if (lower.contains('alternaria') || lower.contains('bercak')) {
+      return 'Bercak Ungu (Alternaria) muncul dalam histori Anda. Atur jarak tanam agar tidak terlalu rapat dan jaga kebersihan lahan.';
+    } else if (lower.contains('ulat')) {
+      return 'Serangan Ulat Bawang terdeteksi. Pasang perangkap feromon dan periksa kelompok telur secara manual secara rutin.';
+    } else if (lower.contains('antraknosa') ||
+        lower.contains('bujang') ||
+        lower.contains('patah')) {
+      return 'Antraknosa (Mati Bujang) terdeteksi. Hentikan penyiraman berlebih dan semprotkan fungisida berbahan tebukonazol.';
+    } else {
+      return 'Penyakit "$top" sering terdeteksi. Segera konsultasikan dengan penyuluh pertanian dan terapkan langkah penanganan yang sesuai.';
+    }
+  }
+
+  /// Menghitung Skor Kesehatan Kebun berdasarkan frekuensi kemunculan penyakit.
+  /// Rumus: 100 - (jumlah kemunculan penyakit × 10), minimal 50.
+  int getHealthScore() {
+    final count = getTopDiseaseCount();
+    final score = 100 - (count * 10);
+    return score.clamp(50, 100);
+  }
+
   // --- RESET DATA ---
   Future<void> clearAll() async {
     await init();
