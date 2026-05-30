@@ -223,6 +223,53 @@ class HistoryService {
     return score.clamp(50, 100);
   }
 
+  // --- GRAFIK TREN PENYAKIT ---
+
+  /// Mengambil semua aktivitas Analisis Foto dan menghitung frekuensi per penyakit.
+  /// Mengabaikan penyakit yang "tidak dikenali" / "tidak diketahui".
+  /// Mengembalikan `Map<String, int>` diurutkan dari kemunculan terbesar.
+  Map<String, int> getDiseaseStatistics() {
+    final activities = getRecentActivities();
+    final Map<String, int> counts = {};
+
+    for (final a in activities) {
+      if (a.type != 'Analisis Foto') continue;
+
+      final lower = a.result.toLowerCase();
+      // Abaikan entri yang tidak informatif
+      if (lower.contains('tidak dikenali') ||
+          lower.contains('tidak diketahui') ||
+          lower.contains('analisis selesai')) {
+        continue;
+      }
+
+      counts[a.result] = (counts[a.result] ?? 0) + 1;
+    }
+
+    // Urutkan dari kemunculan terbanyak
+    final sorted = Map.fromEntries(
+      counts.entries.toList()..sort((a, b) => b.value.compareTo(a.value)),
+    );
+
+    return sorted;
+  }
+
+  /// Mengembalikan nama penyakit dengan jumlah kemunculan terbesar.
+  /// Mengembalikan '-' jika belum ada data.
+  String getTopDiseaseTrend() {
+    final stats = getDiseaseStatistics();
+    if (stats.isEmpty) return '-';
+    return stats.entries.first.key;
+  }
+
+  /// Mengembalikan jumlah kemunculan penyakit terbanyak.
+  /// Mengembalikan 0 jika belum ada data.
+  int getTopDiseaseTrendCount() {
+    final stats = getDiseaseStatistics();
+    if (stats.isEmpty) return 0;
+    return stats.entries.first.value;
+  }
+
   // --- RESET DATA ---
   Future<void> clearAll() async {
     await init();

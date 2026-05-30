@@ -94,6 +94,13 @@ class _DashboardPageState extends State<DashboardPage> {
             _buildInsightCard(),
             const SizedBox(height: 24),
             const Text(
+              'Grafik Tren Penyakit',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 16),
+            _buildDiseaseTrendChart(primary),
+            const SizedBox(height: 24),
+            const Text(
               'Ringkasan Aktivitas',
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
@@ -498,6 +505,241 @@ class _DashboardPageState extends State<DashboardPage> {
           ),
         ],
       ),
+    );
+  }
+
+  /// Grafik Tren Penyakit — horizontal bar chart berbasis data riil dari HistoryService.
+  /// Tidak menggunakan package chart eksternal, hanya Container + Row + Expanded.
+  Widget _buildDiseaseTrendChart(Color primary) {
+    final stats = _historyService.getDiseaseStatistics();
+    final topDisease = _historyService.getTopDiseaseTrend();
+    final topCount = _historyService.getTopDiseaseTrendCount();
+
+    // --- EMPTY STATE ---
+    if (stats.isEmpty) {
+      return Container(
+        padding: const EdgeInsets.all(28),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(20),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.04),
+              blurRadius: 10,
+              offset: const Offset(0, 4),
+            ),
+          ],
+        ),
+        child: Center(
+          child: Column(
+            children: [
+              Icon(
+                Icons.bar_chart_outlined,
+                size: 48,
+                color: Colors.grey.shade300,
+              ),
+              const SizedBox(height: 14),
+              Text(
+                'Belum ada data tren penyakit',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.grey.shade600,
+                ),
+              ),
+              const SizedBox(height: 8),
+              const Text(
+                'Lakukan analisis foto terlebih dahulu untuk\nmelihat tren penyakit tanaman.',
+                textAlign: TextAlign.center,
+                style: TextStyle(color: Colors.grey, fontSize: 13, height: 1.5),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
+    // Nilai terbesar sebagai 100% lebar bar
+    final int maxCount = stats.values.first; // sudah diurutkan terbesar
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        // --- CHART CARD ---
+        Container(
+          padding: const EdgeInsets.all(20),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(20),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.04),
+                blurRadius: 10,
+                offset: const Offset(0, 4),
+              ),
+            ],
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Judul kecil dalam card
+              Row(
+                children: [
+                  Icon(Icons.trending_up, color: primary, size: 18),
+                  const SizedBox(width: 8),
+                  Text(
+                    'Frekuensi Deteksi per Penyakit',
+                    style: TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.grey.shade700,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 16),
+
+              // Bar chart rows — tampilkan max 6 penyakit teratas
+              ...stats.entries.take(6).map((entry) {
+                final name = entry.key;
+                final count = entry.value;
+                final barFraction = maxCount == 0 ? 0.0 : count / maxCount;
+                final isTop = name == topDisease;
+
+                // Pilih warna: penyakit teratas = primaryColor, sisanya abu-abu
+                final barColor = isTop ? primary : Colors.grey.shade400;
+
+                return Padding(
+                  padding: const EdgeInsets.only(bottom: 14),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      // Label nama penyakit (lebar tetap)
+                      SizedBox(
+                        width: 120,
+                        child: Text(
+                          name,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            fontSize: 12,
+                            fontWeight: isTop
+                                ? FontWeight.bold
+                                : FontWeight.normal,
+                            color: isTop ? primary : Colors.grey.shade800,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+
+                      // Bar
+                      Expanded(
+                        child: Stack(
+                          children: [
+                            // Track abu-abu penuh
+                            Container(
+                              height: 18,
+                              decoration: BoxDecoration(
+                                color: Colors.grey.shade100,
+                                borderRadius: BorderRadius.circular(6),
+                              ),
+                            ),
+                            // Bar berwarna
+                            FractionallySizedBox(
+                              widthFactor: barFraction.clamp(0.04, 1.0),
+                              child: Container(
+                                height: 18,
+                                decoration: BoxDecoration(
+                                  color: barColor.withValues(alpha: 0.85),
+                                  borderRadius: BorderRadius.circular(6),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+
+                      // Angka kemunculan
+                      SizedBox(
+                        width: 24,
+                        child: Text(
+                          '$count',
+                          textAlign: TextAlign.right,
+                          style: TextStyle(
+                            fontSize: 13,
+                            fontWeight: FontWeight.bold,
+                            color: isTop ? primary : Colors.grey.shade700,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              }),
+
+              // Keterangan
+              const SizedBox(height: 4),
+              Text(
+                '* Menampilkan ${stats.length > 6 ? "6 dari ${stats.length}" : stats.length.toString()} penyakit terdeteksi',
+                style: TextStyle(fontSize: 11, color: Colors.grey.shade400),
+              ),
+            ],
+          ),
+        ),
+
+        const SizedBox(height: 12),
+
+        // --- INSIGHT TAMBAHAN DI BAWAH GRAFIK ---
+        Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: Colors.orange.shade50,
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: Colors.orange.shade100),
+          ),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text('⚠️', style: TextStyle(fontSize: 20)),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      'Penyakit paling dominan:',
+                      style: TextStyle(
+                        fontSize: 13,
+                        color: Colors.orange,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      topDisease,
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.orange.shade800,
+                      ),
+                    ),
+                    const SizedBox(height: 6),
+                    Text(
+                      'Terdeteksi $topCount kali. Disarankan monitoring rutin setiap 2–3 hari.',
+                      style: TextStyle(
+                        fontSize: 13,
+                        color: Colors.orange.shade700,
+                        height: 1.5,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
     );
   }
 
