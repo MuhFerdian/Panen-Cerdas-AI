@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panen Cerdas AI - Assistant Petani Bawang Merah</title>
+    <meta name="description" content="AI Assistant untuk Petani Bawang Merah. Deteksi penyakit, monitoring kebun, dan rekomendasi penanganan dengan Artificial Intelligence.">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- AOS Animation -->
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="container nav-container">
+            <a href="#" class="logo">
+                <i class="fa-solid fa-leaf"></i> Panen Cerdas <span>AI</span>
+            </a>
+            <ul class="nav-links">
+                <li><a href="#fitur">Fitur</a></li>
+                <li><a href="#showcase">Showcase</a></li>
+                <li><a href="#roadmap">Roadmap</a></li>
+                <li><a href="#developer">Developer</a></li>
+            </ul>
+            <div class="nav-actions">
+                <a href="#download" class="btn btn-primary btn-sm">Download APK</a>
+            </div>
+            <div class="mobile-menu-btn">
+                <i class="fa-solid fa-bars"></i>
+            </div>
+        </div>
+    </nav>
+
+    <!-- SECTION 1: HERO -->
+    <section class="hero" id="home">
+        <div class="container hero-container">
+            <div class="hero-content" data-aos="fade-up" data-aos-duration="1000">
+                <div class="badge">🚀 Versi 1.8 Rilis!</div>
+                <h1>Panen Cerdas AI</h1>
+                <h2>AI Assistant untuk Petani Bawang Merah</h2>
+                <p>Panen Cerdas AI membantu petani mendeteksi penyakit tanaman, memantau kesehatan kebun, menganalisis tren penyakit, dan memberikan rekomendasi penanganan secara cepat menggunakan Artificial Intelligence.</p>
+                <div class="hero-buttons">
+                    <a href="#download" class="btn btn-primary">
+                        <i class="fa-brands fa-android"></i> Download APK
+                    </a>
+                    <a href="https://github.com/MuhFerdian/Panen-Cerdas-AI" target="_blank" class="btn btn-outline">
+                        <i class="fa-brands fa-github"></i> GitHub Repository
+                    </a>
+                </div>
+            </div>
+            <div class="hero-image" data-aos="fade-left" data-aos-duration="1200">
+                <div class="mockup-container">
+                    <div class="mockup-phone">
+                        <div class="mockup-screen">
+                             <img
+                                src="images/analisis-tanaman-penyakit-bercak-ungu-1.png"
+                                alt="Panen Cerdas AI"
+                                class="hero-app-image">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SECTION 2: PROBLEM & SOLUTION -->
+    <section class="problem-solution section-padding" id="tentang">
+        <div class="container">
+            <div class="section-title text-center" data-aos="fade-up">
+                <h2>Mengapa Panen Cerdas AI?</h2>
+                <p>Solusi modern untuk masalah pertanian tradisional</p>
+            </div>
+            
+            <div class="ps-grid">
+                <!-- Problem -->
+                <div class="ps-card problem-card" data-aos="fade-right" data-aos-delay="100">
+                    <div class="ps-header">
+                        <div class="ps-icon"><i class="fa-solid fa-triangle-exclamation"></i></div>
+                        <h3>Masalah</h3>
+                    </div>
+                    <ul class="ps-list">
+                        <li><i class="fa-solid fa-xmark"></i> Sulit mengenali penyakit tanaman secara dini</li>
+                        <li><i class="fa-solid fa-xmark"></i> Konsultasi ahli pertanian sangat terbatas</li>
+                        <li><i class="fa-solid fa-xmark"></i> Penanganan sering terlambat dilakukan</li>
+                        <li><i class="fa-solid fa-xmark"></i> Risiko gagal panen meningkat</li>
+                    </ul>
+                </div>
+                
+                <!-- Solution -->
+                <div class="ps-card solution-card" data-aos="fade-left" data-aos-delay="200">
+                    <div class="ps-header">
+                        <div class="ps-icon"><i class="fa-solid fa-check"></i></div>
+                        <h3>Solusi Panen Cerdas AI</h3>
+                    </div>
+                    <ul class="ps-list">
+                        <li><i class="fa-solid fa-check-circle"></i> Deteksi penyakit instan lewat kamera ponsel</li>
+                        <li><i class="fa-solid fa-check-circle"></i> Monitoring kesehatan kebun komprehensif</li>
+                        <li><i class="fa-solid fa-check-circle"></i> Analisis tren penyakit berbasis data</li>
+                        <li><i class="fa-solid fa-check-circle"></i> Rekomendasi tindakan otomatis & akurat</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SECTION 3: FITUR UNGGULAN -->
+    <section class="features bg-light section-padding" id="fitur">
+        <div class="container">
+            <div class="section-title text-center" data-aos="fade-up">
+                <h2>Fitur Unggulan</h2>
+                <p>Teknologi cerdas di genggaman Anda</p>
+            </div>
+            
+            <div class="features-grid">
+                <div class="feature-card" data-aos="zoom-in" data-aos-delay="100">
+                    <div class="f-icon"><i class="fa-solid fa-camera-retro"></i></div>
+                    <h3>AI Disease Detection</h3>
+                    <p>Kenali penyakit bawang merah hanya dengan memfoto daun yang bermasalah menggunakan AI.</p>
+                </div>
+                <div class="feature-card" data-aos="zoom-in" data-aos-delay="200">
+                    <div class="f-icon"><i class="fa-solid fa-database"></i></div>
+                    <h3>Local Disease Database</h3>
+                    <p>Aplikasi tetap berfungsi mendiagnosis penyakit meskipun tanpa koneksi internet.</p>
+                </div>
+                <div class="feature-card" data-aos="zoom-in" data-aos-delay="300">
+                    <div class="f-icon"><i class="fa-solid fa-chart-pie"></i></div>
+                    <h3>Dashboard Analytics</h3>
+                    <p>Pantau seluruh aktivitas kebun, mulai dari jumlah analisis hingga grafik penggunaan.</p>
+                </div>
+                <div class="feature-card" data-aos="zoom-in" data-aos-delay="400">
+                    <div class="f-icon"><i class="fa-solid fa-lightbulb"></i></div>
+                    <h3>Insight Kebun AI</h3>
+                    <p>Skor kesehatan kebun dan rekomendasi pintar berbasis riwayat analisis lahan Anda.</p>
+                </div>
+                <div class="feature-card" data-aos="zoom-in" data-aos-delay="500">
+                    <div class="f-icon"><i class="fa-solid fa-chart-line"></i></div>
+                    <h3>Grafik Tren Penyakit</h3>
+                    <p>Visualisasi penyakit yang paling sering menyerang untuk pengambilan keputusan dini.</p>
+                </div>
+                <div class="feature-card" data-aos="zoom-in" data-aos-delay="600">
+                    <div class="f-icon"><i class="fa-solid fa-seedling"></i></div>
+                    <h3>Rekomendasi Musim Tanam</h3>
+                    <p>Tips jitu untuk musim tanam berikutnya agar terhindar dari penyakit endemik di lahan.</p>
+                </div>
+                <div class="feature-card" data-aos="zoom-in" data-aos-delay="700">
+                    <div class="f-icon"><i class="fa-solid fa-file-pdf"></i></div>
+                    <h3>Export PDF Report</h3>
+                    <p>Simpan dan bagikan laporan lengkap analisis penyakit tanaman ke penyuluh pertanian.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SECTION 4: SCREENSHOT APLIKASI
+    <section class="showcase section-padding" id="showcase">
+        <div class="container">
+            <div class="section-title text-center" data-aos="fade-up">
+                <h2>Showcase Aplikasi</h2>
+                <p>Tampilan antarmuka modern yang mudah digunakan</p>
+            </div>
+            
+            <div class="gallery-container" data-aos="fade-up" data-aos-delay="200">
+                <div class="gallery-wrapper" id="galleryWrapper">
+                   
+                    <div class="gallery-item">
+                        <div class="screenshot-placeholder">
+                            <i class="fa-solid fa-table-columns"></i>
+                            <p>Dashboard 1.png</p>
+                        </div>
+                    </div>
+                    <div class="gallery-item">
+                        <div class="screenshot-placeholder">
+                            <i class="fa-solid fa-microscope"></i>
+                            <p>analysis.png</p>
+                        </div>
+                    </div>
+                    <div class="gallery-item">
+                        <div class="screenshot-placeholder">
+                            <i class="fa-solid fa-lightbulb"></i>
+                            <p>insight.png</p>
+                        </div>
+                    </div>
+                    <div class="gallery-item">
+                        <div class="screenshot-placeholder">
+                            <i class="fa-solid fa-chart-bar"></i>
+                            <p>trend.png</p>
+                        </div>
+                    </div>
+                    <div class="gallery-item">
+                        <div class="screenshot-placeholder">
+                            <i class="fa-solid fa-leaf"></i>
+                            <p>recommendation.png</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="gallery-controls">
+                    <button class="gallery-btn prev-btn"><i class="fa-solid fa-chevron-left"></i></button>
+                    <button class="gallery-btn next-btn"><i class="fa-solid fa-chevron-right"></i></button>
+                </div>
+            </div>
+        </div>
+    </section> -->
+
+<!-- SECTION 4: SCREENSHOT APLIKASI -->
+<section class="showcase section-padding" id="showcase">
+    <div class="container">
+
+        <div class="section-title text-center" data-aos="fade-up">
+            <h2>Showcase Aplikasi</h2>
+            <p>Tampilan antarmuka modern yang mudah digunakan</p>
+        </div>
+
+        <div class="gallery-container" data-aos="fade-up" data-aos-delay="200">
+
+            <div class="gallery-wrapper" id="galleryWrapper">
+
+                <!-- Dashboard 1 -->
+                <div class="gallery-item">
+                    <img src="images/dashboard-1.png"
+                         alt="Dashboard Utama"
+                         class="showcase-img">
+                </div>
+
+                <!-- Dashboard 2 -->
+                <div class="gallery-item">
+                    <img src="images/dashboard-2.png"
+                         alt="Dashboard Statistik"
+                         class="showcase-img">
+                </div>
+
+                <!-- Dashboard 3 -->
+                <div class="gallery-item">
+                    <img src="images/dashboard-3.png"
+                         alt="Dashboard Insight"
+                         class="showcase-img">
+                </div>
+
+                <!-- Analisis Penyakit -->
+                <div class="gallery-item">
+                    <img src="images/analisis-tanaman-penyakit-bercak-ungu-1.png"
+                         alt="Analisis Penyakit"
+                         class="showcase-img">
+                </div>
+
+                <!-- Preview PDF -->
+                <div class="gallery-item">
+                    <img src="images/analisis-tanaman-penyakit-bercak-ungu-preview-pdf-1.png"
+                         alt="Preview PDF"
+                         class="showcase-img">
+                </div>
+
+                <!-- Stres Kekeringan -->
+                <div class="gallery-item">
+                    <img src="images/analisis-tanaman-stres-kekeringan-1.png"
+                         alt="Analisis Kekeringan"
+                         class="showcase-img">
+                </div>
+
+                <!-- Chat AI -->
+                <div class="gallery-item">
+                    <img src="images/chat-ai.png"
+                         alt="Chat AI"
+                         class="showcase-img">
+                </div>
+
+                <!-- Estimasi Panen Baik -->
+                <div class="gallery-item">
+                    <img src="images/estimasi-panen-baik.png"
+                         alt="Estimasi Panen Baik"
+                         class="showcase-img">
+                </div>
+
+                <!-- Estimasi Panen Sedang -->
+                <div class="gallery-item">
+                    <img src="images/estimasi-panen-sedang.png"
+                         alt="Estimasi Panen Sedang"
+                         class="showcase-img">
+                </div>
+
+                <!-- Estimasi Panen Buruk -->
+                <div class="gallery-item">
+                    <img src="images/estimasi-panen-buruk.png"
+                         alt="Estimasi Panen Buruk"
+                         class="showcase-img">
+                </div>
+
+            </div>
+
+            <div class="gallery-controls">
+                <button class="gallery-btn prev-btn">
+                    <i class="fa-solid fa-chevron-left"></i>
+                </button>
+
+                <button class="gallery-btn next-btn">
+                    <i class="fa-solid fa-chevron-right"></i>
+                </button>
+            </div>
+
+        </div>
+
+    </div>
+</section>
+
+    <!-- SECTION 5: TECH STACK -->
+    <section class="tech-stack bg-light section-padding">
+        <div class="container">
+            <div class="section-title text-center" data-aos="fade-up">
+                <h2>Teknologi yang Digunakan</h2>
+                <p>Dibangun menggunakan tumpukan teknologi modern yang tangguh</p>
+            </div>
+            
+            <div class="tech-grid" data-aos="fade-up" data-aos-delay="150">
+                <div class="tech-card"><i class="fa-brands fa-flutter" style="color: #02569B"></i> Flutter</div>
+                <div class="tech-card"><i class="fa-solid fa-bolt" style="color: #009688"></i> FastAPI</div>
+                <div class="tech-card"><i class="fa-solid fa-microchip" style="color: #1A73E8"></i> Gemini AI</div>
+                <div class="tech-card"><i class="fa-brands fa-python" style="color: #3776AB"></i> Python</div>
+                <div class="tech-card"><i class="fa-solid fa-code" style="color: #0175C2"></i> Dart</div>
+                <div class="tech-card"><i class="fa-solid fa-memory" style="color: #FF9800"></i> SharedPreferences</div>
+                <div class="tech-card"><i class="fa-solid fa-file-pdf" style="color: #F40F02"></i> PDF Generator</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SECTION 6: ROADMAP -->
+    <section class="roadmap section-padding" id="roadmap">
+        <div class="container">
+            <div class="section-title text-center" data-aos="fade-up">
+                <h2>Project Roadmap</h2>
+                <p>Perkembangan fitur aplikasi dari versi ke versi</p>
+            </div>
+            
+            <div class="timeline" data-aos="fade-up" data-aos-delay="200">
+                <div class="timeline-item done">
+                    <div class="timeline-dot"><i class="fa-solid fa-check"></i></div>
+                    <div class="timeline-content">
+                        <h3>v1.0 - Offline AI</h3>
+                        <p>Implementasi rule-based AI tanpa internet.</p>
+                    </div>
+                </div>
+                <div class="timeline-item done">
+                    <div class="timeline-dot"><i class="fa-solid fa-check"></i></div>
+                    <div class="timeline-content">
+                        <h3>v1.1 - Analisis Foto</h3>
+                        <p>Integrasi Gemini Vision untuk deteksi penyakit.</p>
+                    </div>
+                </div>
+                <div class="timeline-item done">
+                    <div class="timeline-dot"><i class="fa-solid fa-check"></i></div>
+                    <div class="timeline-content">
+                        <h3>v1.2 - Database Lokal</h3>
+                        <p>Penyimpanan penyakit secara offline.</p>
+                    </div>
+                </div>
+                <div class="timeline-item done">
+                    <div class="timeline-dot"><i class="fa-solid fa-check"></i></div>
+                    <div class="timeline-content">
+                        <h3>v1.3 - Dashboard Analytics</h3>
+                        <p>Statistik penggunaan aplikasi.</p>
+                    </div>
+                </div>
+                <div class="timeline-item done">
+                    <div class="timeline-dot"><i class="fa-solid fa-check"></i></div>
+                    <div class="timeline-content">
+                        <h3>v1.4 - Dashboard Insight</h3>
+                        <p>Penyakit paling banyak muncul.</p>
+                    </div>
+                </div>
+                <div class="timeline-item done">
+                    <div class="timeline-dot"><i class="fa-solid fa-check"></i></div>
+                    <div class="timeline-content">
+                        <h3>v1.5 - Export PDF</h3>
+                        <p>Fitur ekspor laporan penyakit ke file PDF.</p>
+                    </div>
+                </div>
+                <div class="timeline-item done">
+                    <div class="timeline-dot"><i class="fa-solid fa-check"></i></div>
+                    <div class="timeline-content">
+                        <h3>v1.6 - Insight Kebun AI</h3>
+                        <p>Skor kesehatan dan rekomendasi kebun.</p>
+                    </div>
+                </div>
+                <div class="timeline-item done">
+                    <div class="timeline-dot"><i class="fa-solid fa-check"></i></div>
+                    <div class="timeline-content">
+                        <h3>v1.7 - Grafik Tren Penyakit</h3>
+                        <p>Visualisasi chart frekuensi penyakit.</p>
+                    </div>
+                </div>
+                <div class="timeline-item done">
+                    <div class="timeline-dot"><i class="fa-solid fa-check"></i></div>
+                    <div class="timeline-content">
+                        <h3>v1.8 - Rekomendasi Musim Tanam</h3>
+                        <p>Saran pergantian bibit dan strategi tanah.</p>
+                    </div>
+                </div>
+                <div class="timeline-item upcoming">
+                    <div class="timeline-dot"><i class="fa-solid fa-clock"></i></div>
+                    <div class="timeline-content">
+                        <h3>🔜 v2.0 - Firebase Cloud Sync</h3>
+                        <p>Sinkronisasi data ke cloud dan fitur komunitas.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SECTION 7 & 8: DEVELOPER & DOWNLOAD -->
+    <section class="dev-download bg-light section-padding" id="developer">
+        <div class="container">
+            <div class="grid-2-cols">
+                <!-- Developer Info -->
+                <div class="dev-card" data-aos="fade-right">
+                    <div class="dev-header">
+                        <div class="dev-avatar">
+                            <i class="fa-solid fa-user-astronaut"></i>
+                        </div>
+                        <div class="dev-info">
+                            <h3>Muh Masrukhin Ferdian</h3>
+                            <p>Mahasiswa Teknik Informatika<br>Politeknik Negeri Jember</p>
+                        </div>
+                    </div>
+                    <p class="dev-desc">Lead Developer Panen Cerdas AI. Tertarik pada Mobile Development, Artificial Intelligence, dan Agritech.</p>
+                    <div class="dev-social">
+                        <a href="https://github.com/MuhFerdian" target="_blank" title="GitHub"><i class="fa-brands fa-github"></i></a>
+                        <a href="https://www.linkedin.com/in/muh-masrukhin-ferdian-7b180730a" target="_blank" title="LinkedIn"><i class="fa-brands fa-linkedin"></i></a>
+                        <a href="mailto:ferdibaru.fb@gmail.com" title="Email"><i class="fa-solid fa-envelope"></i></a>
+                    </div>
+                </div>
+                
+                <!-- Download Box -->
+                <div class="download-card" id="download" data-aos="fade-left">
+                    <div class="dl-icon"><i class="fa-brands fa-google-play"></i></div>
+                    <h3>Siap untuk Panen Cerdas?</h3>
+                    <p>Unduh versi terbaru sekarang dan mulai lindungi tanaman bawang merah Anda.</p>
+                    <a href="https://github.com/MuhFerdian/Panen-Cerdas-AI/releases/download/v1.8-planting-recommendation/app-release.apk" target="_blank" class="btn btn-primary btn-large">
+                        <i class="fa-solid fa-download"></i> Download APK Terbaru
+                    </a>
+                    <p class="version-text">Versi 1.8 (Stable)</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SECTION 9: FOOTER -->
+    <footer>
+        <div class="container footer-container">
+            <div class="footer-logo">
+                <i class="fa-solid fa-leaf"></i> Panen Cerdas <span>AI</span>
+            </div>
+            <div class="footer-text">
+                <p>Built with Flutter, FastAPI and Gemini AI.</p>
+                <p>&copy; 2026 Panen Cerdas AI. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script src="js/script.js"></script>
+</body>
+</html>
